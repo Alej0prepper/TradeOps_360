@@ -11,7 +11,11 @@ The final objective is to produce both:
 
 ## Current state
 
-Architecture baseline. No custom Odoo modules have been implemented yet.
+Day 160 — first import model.
+
+`trade_core` provides the shared TradeOps foundation. `trade_import` now
+contains `trade.import`, the first persistent business model. It records an
+import number, date, external reference, state, and notes through the Odoo ORM.
 
 ## Core principle
 
@@ -28,3 +32,7 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 - [Roadmap](docs/roadmap.md)
 - [Architectural decisions](docs/decisions/README.md)
 - [Learning milestones](docs/learning/README.md)
+
+## Next step
+
+Day 161 — add relationships and configurable data to imports.

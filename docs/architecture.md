@@ -33,7 +33,10 @@ When TradeOps needs additional behavior or information on one of these concepts,
 
 TradeOps-specific domains will include Imports, Presales, Distribution, and Supplier Reconciliation.
 
-Their models are intentionally not implemented in this baseline. A new model must represent a genuine TradeOps domain concept and be introduced only when a lesson creates the architectural need.
+The first custom model is `trade.import`, introduced in Day 160 for the
+import domain. Other custom models must represent genuine TradeOps domain
+concepts and be introduced only when their lesson creates the architectural
+need.
 
 ## ORM policy
 
@@ -62,4 +65,11 @@ Before creating a new model:
 
 ## Module boundaries
 
-Potential modules such as `trade_core`, `trade_import`, `trade_presale`, `trade_distribution`, and `trade_reconciliation` will be created only when there is a concrete architectural reason to separate responsibilities. The initial `custom_addons/` directory deliberately contains no addon.
+`trade_core` provides the shared TradeOps foundation and depends on the
+standard Contacts, Product, and Inventory capabilities. `trade_import`
+contains the import domain boundary and depends on `trade_core`.
+
+Potential modules such as `trade_presale`, `trade_distribution`, and
+`trade_reconciliation` will be created only when there is a concrete
+architectural reason to separate responsibilities. No business model is part
+of `trade_core`; `trade_import` currently owns only `trade.import`.
