@@ -26,7 +26,7 @@ Read `README.md` and the files in `docs/` before making architecture or domain d
 - Every lesson must leave a functional, coherent, and observable improvement over the preceding state.
 - Record significant architecture or domain choices in `docs/decisions/` using a numbered decision record.
 - Record material learning transformations in `docs/learning/`; explain what changed, why, the Odoo concept involved, and the resulting behavior.
-- Update `CHANGELOG.md` for notable user-facing, architectural, or release changes.
+- Update `CHANGELOG.md` for notable user-facing, architectural, or release changes. Describe the concrete before-and-after behavior in a short narrative: enough to tell the change's story, without repeating implementation details.
 
 ## Code and documentation
 

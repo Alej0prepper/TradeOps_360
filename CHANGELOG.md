@@ -9,7 +9,8 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 ### Added
 
 - Established the Day 157 architecture baseline: project vision, architecture contract, roadmap, decision log, learning log, and the empty custom addons directory.
-- Added the Day 159 installable skeletons for `trade_core` and `trade_import`.
+- TradeOps gained its first installable boundaries: `trade_core` now gathers the standard Odoo capabilities shared by the suite, while `trade_import` opens a separate home for import operations before any business records exist.
+- Imports can now be persisted through the Odoo ORM. A new record begins as `New` and `Draft`, receives today's date automatically, and can retain its external reference and operational notes while later classes add its relationships and workflow.
 
 ## [0.0.0] - 2026-08-21
 

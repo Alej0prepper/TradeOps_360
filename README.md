@@ -11,11 +11,11 @@ The final objective is to produce both:
 
 ## Current state
 
-Day 159 — addon skeletons.
+Day 160 — first import model.
 
-`trade_core` provides the shared TradeOps foundation and `trade_import`
-declares the import domain boundary. Neither addon contains business models or
-functional logic yet.
+`trade_core` provides the shared TradeOps foundation. `trade_import` now
+contains `trade.import`, the first persistent business model. It records an
+import number, date, external reference, state, and notes through the Odoo ORM.
 
 ## Core principle
 
@@ -35,4 +35,4 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 
 ## Next step
 
-Day 160 — create the first `trade.import` model with the Odoo ORM.
+Day 161 — add relationships and configurable data to imports.
