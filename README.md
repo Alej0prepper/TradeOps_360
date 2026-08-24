@@ -11,7 +11,11 @@ The final objective is to produce both:
 
 ## Current state
 
-Architecture baseline. No custom Odoo modules have been implemented yet.
+Day 159 — addon skeletons.
+
+`trade_core` provides the shared TradeOps foundation and `trade_import`
+declares the import domain boundary. Neither addon contains business models or
+functional logic yet.
 
 ## Core principle
 
@@ -28,3 +32,7 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 - [Roadmap](docs/roadmap.md)
 - [Architectural decisions](docs/decisions/README.md)
 - [Learning milestones](docs/learning/README.md)
+
+## Next step
+
+Day 160 — create the first `trade.import` model with the Odoo ORM.

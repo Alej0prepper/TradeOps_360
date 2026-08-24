@@ -62,4 +62,11 @@ Before creating a new model:
 
 ## Module boundaries
 
-Potential modules such as `trade_core`, `trade_import`, `trade_presale`, `trade_distribution`, and `trade_reconciliation` will be created only when there is a concrete architectural reason to separate responsibilities. The initial `custom_addons/` directory deliberately contains no addon.
+`trade_core` provides the shared TradeOps foundation and depends on the
+standard Contacts, Product, and Inventory capabilities. `trade_import`
+contains the import domain boundary and depends on `trade_core`.
+
+Potential modules such as `trade_presale`, `trade_distribution`, and
+`trade_reconciliation` will be created only when there is a concrete
+architectural reason to separate responsibilities. No business model is part
+of either current addon yet.
