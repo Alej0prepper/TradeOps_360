@@ -11,11 +11,11 @@ The final objective is to produce both:
 
 ## Current state
 
-Day 160 — first import model.
+Day 161 — connected import model.
 
-`trade_core` provides the shared TradeOps foundation. `trade_import` now
-contains `trade.import`, the first persistent business model. It records an
-import number, date, external reference, state, and notes through the Odoo ORM.
+`trade_core` now provides a configurable port catalog. `trade_import` connects
+each import with Odoo customers, financiers, companies, active products, and
+its origin and destination ports.
 
 ## Core principle
 
@@ -35,4 +35,4 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 
 ## Next step
 
-Day 161 — add relationships and configurable data to imports.
+Day 162 — add computed fields and business constraints to imports.

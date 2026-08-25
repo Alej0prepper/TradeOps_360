@@ -19,6 +19,36 @@ class TradeImport(models.Model):
     reference = fields.Char(
         string="External Reference",
     )
+    customer_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Customer",
+        required=True,
+    )
+    financier_id = fields.Many2one(
+        comodel_name="res.partner",
+        string="Financier",
+    )
+    company_id = fields.Many2one(
+        comodel_name="res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
+    origin_port_id = fields.Many2one(
+        comodel_name="trade.port",
+        string="Origin Port",
+        required=True,
+    )
+    destination_port_id = fields.Many2one(
+        comodel_name="trade.port",
+        string="Destination Port",
+        required=True,
+    )
+    line_ids = fields.One2many(
+        comodel_name="trade.import.line",
+        inverse_name="import_id",
+        string="Products",
+    )
     state = fields.Selection(
         selection=[
             ("draft", "Draft"),
