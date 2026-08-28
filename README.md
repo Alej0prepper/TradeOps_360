@@ -11,11 +11,13 @@ The final objective is to produce both:
 
 ## Current state
 
-Day 161 — connected import model.
+Day 164 — import expenses and proportional landed costs.
 
 `trade_core` now provides a configurable port catalog. `trade_import` connects
 each import with Odoo customers, financiers, companies, active products, and
-its origin and destination ports.
+its origin and destination ports. Imports calculate line and quantity totals,
+enforce valid routes and quantities, and distribute import expenses
+proportionally to purchase value to determine each product's landed cost.
 
 ## Core principle
 
@@ -35,4 +37,4 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 
 ## Next step
 
-Day 162 — add computed fields and business constraints to imports.
+Day 165 — add the import workflow.
