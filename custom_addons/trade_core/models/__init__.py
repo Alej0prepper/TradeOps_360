@@ -1,1 +1,2 @@
-# Models will be introduced in later roadmap milestones.
+from . import res_partner
+from . import trade_port

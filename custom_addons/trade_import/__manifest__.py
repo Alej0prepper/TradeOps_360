@@ -7,7 +7,9 @@
     "depends": [
         "trade_core",
     ],
-    "data": [],
+    "data": [
+        "views/trade_import_views.xml",
+    ],
     "installable": True,
     "application": True,
 }

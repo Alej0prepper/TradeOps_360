@@ -2,15 +2,15 @@
 
 ## Project purpose
 
-TradeOps 360 is a single Odoo 17 project developed incrementally from Day 157 through Day 185. It must become both a functional application for commercial and import operations and an understandable record of how the application evolved.
+TradeOps 360 is a single Odoo 17 project developed incrementally throughout its learning course. It must become both a functional application for commercial and import operations and an understandable record of how the application evolved.
 
-Read `README.md` and the files in `docs/` before making architecture or domain decisions. Treat `docs/roadmap.md` as the progression contract.
+Read `README.md`, `docs/roadmap.md`, `docs/vision.md`, `docs/architecture.md`, and `CHANGELOG.md` before making architecture or domain decisions. Treat `docs/roadmap.md` as the progression contract.
 
 ## Current baseline
 
-- This repository is at the Day 157 architecture baseline.
-- `custom_addons/` is intentionally empty until Day 159.
-- Do not add Odoo, Docker, PostgreSQL, manifests, models, views, security files, demo data, tests, or a separate backend before their roadmap milestone.
+- Infer the current implementation baseline from the roadmap, vision, architecture, changelog, existing code, and learning and decision records. Do not assume or state a fixed lesson day as the baseline.
+- Use the most recently documented and observable functionality to determine what is already available, then use the roadmap to identify the next permitted scope.
+- Do not introduce functionality belonging to a later roadmap milestone. In particular, do not add infrastructure, models, views, security, demo data, tests, or a separate backend unless the current permitted scope requires it.
 
 ## Architecture rules
 

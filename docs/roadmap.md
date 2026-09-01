@@ -8,7 +8,7 @@ This roadmap is the progression contract for the course. Work is introduced in t
 | 158 | Professional Odoo 17 environment |
 | 159 | First addons: `trade_core` and `trade_import` |
 | 160 | First import + ORM, `env`, and recordsets |
-| 161 | Configuration: ports, financiers, and abbreviations |
+| 161 | Relationships, domains, configurable ports, and import lines |
 | 162 | Lines, products, and expenses |
 | 163 | Allocated real cost |
 | 164 | Constraints and onchange |

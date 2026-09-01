@@ -33,10 +33,12 @@ When TradeOps needs additional behavior or information on one of these concepts,
 
 TradeOps-specific domains will include Imports, Presales, Distribution, and Supplier Reconciliation.
 
-The first custom model is `trade.import`, introduced in Day 160 for the
-import domain. Other custom models must represent genuine TradeOps domain
-concepts and be introduced only when their lesson creates the architectural
-need.
+The current custom models are `trade.port` for the TradeOps port catalog and
+`trade.import` with its `trade.import.line` children for the import domain.
+`res.partner` is extended with the optional `trade_code` field; no separate
+TradeOps customer model exists. Other custom models must represent genuine
+TradeOps domain concepts and be introduced only when their lesson creates the
+architectural need.
 
 ## ORM policy
 
@@ -72,4 +74,13 @@ contains the import domain boundary and depends on `trade_core`.
 Potential modules such as `trade_presale`, `trade_distribution`, and
 `trade_reconciliation` will be created only when there is a concrete
 architectural reason to separate responsibilities. No business model is part
-of `trade_core`; `trade_import` currently owns only `trade.import`.
+of `trade_core`, which currently owns `trade.port`; `trade_import` owns
+`trade.import` and `trade.import.line`.
+
+## User interface
+
+`trade_core` extends the standard contact form through view inheritance and
+XPath so that `trade_code` appears without copying Odoo's view. `trade_import`
+provides the import list and form views, plus the TradeOps > Imports action and
+menu. Access controls are deliberately not part of these modules yet; they
+will be introduced with the corresponding security milestone.
