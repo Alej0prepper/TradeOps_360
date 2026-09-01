@@ -15,6 +15,9 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 - Trade imports now expose computed line and quantity totals and enforce valid routes and positive expected quantities.
 - Imports now calculate landed costs by allocating registered expenses in
   proportion to each product line's purchase value.
+- TradeOps now extends Odoo contacts with a reusable business code and exposes
+  import operations through the TradeOps menu, a list view, and a form that
+  includes product and expense lines.
 
 ## [0.0.0] - 2026-08-21
 

@@ -11,13 +11,19 @@ The final objective is to produce both:
 
 ## Current state
 
-Day 164 — import expenses and proportional landed costs.
-
 `trade_core` now provides a configurable port catalog. `trade_import` connects
 each import with Odoo customers, financiers, companies, active products, and
 its origin and destination ports. Imports calculate line and quantity totals,
 enforce valid routes and quantities, and distribute import expenses
 proportionally to purchase value to determine each product's landed cost.
+
+TradeOps extends Odoo contacts with an optional business code instead of
+duplicating customers or financiers. Administrators can manage that code from
+the standard contact form, and can manage imports through TradeOps > Imports.
+The import lifecycle states are defined as shared vocabulary, but transitions
+between them are not yet enforced. The project currently has no TradeOps
+access-control configuration, reception or inventory workflow, presale,
+distribution, supplier reconciliation, API, reports, or automated test suite.
 
 ## Core principle
 
@@ -35,6 +41,9 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 - [Architectural decisions](docs/decisions/README.md)
 - [Learning milestones](docs/learning/README.md)
 
-## Next step
+## Remaining work
 
-Day 165 — add the import workflow.
+The remaining work includes the import workflow and its valid state
+transitions, access controls and multi-company restrictions, reception and
+inventory, presales and sales, distribution, supplier reconciliation,
+integrations and reports, testing, and deployment.
