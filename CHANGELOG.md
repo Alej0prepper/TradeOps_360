@@ -18,6 +18,10 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 - TradeOps now extends Odoo contacts with a reusable business code and exposes
   import operations through the TradeOps menu, a list view, and a form that
   includes product and expense lines.
+- TradeOps now captures presales linked to imports. Presale product selectors
+  are limited to products in the selected import, and ORM constraints reject
+  invalid products and non-positive quantities while preserving the future
+  integration point with Odoo Sales.
 
 ## [0.0.0] - 2026-08-21
 

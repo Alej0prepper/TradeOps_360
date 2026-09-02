@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_trade_presale_tree" model="ir.ui.view">
+        <field name="name">trade.presale.tree</field>
+        <field name="model">trade.presale</field>
+        <field name="arch" type="xml">
+            <tree string="Presales">
+                <field name="name"/>
+                <field name="import_id"/>
+                <field name="customer_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_trade_presale_form" model="ir.ui.view">
+        <field name="name">trade.presale.form</field>
+        <field name="model">trade.presale</field>
+        <field name="arch" type="xml">
+            <form string="Presale">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <field name="import_id"/>
+                        <field name="customer_id"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="allowed_product_ids" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Products">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_trade_presale" model="ir.actions.act_window">
+        <field name="name">Presales</field>
+        <field name="res_model">trade.presale</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_tradeops_presales"
+        name="Presales"
+        parent="trade_import.menu_tradeops_root"
+        action="action_trade_presale"
+        sequence="20"
+    />
+</odoo>

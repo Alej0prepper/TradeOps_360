@@ -16,14 +16,17 @@ each import with Odoo customers, financiers, companies, active products, and
 its origin and destination ports. Imports calculate line and quantity totals,
 enforce valid routes and quantities, and distribute import expenses
 proportionally to purchase value to determine each product's landed cost.
+`trade_presale` now records commercial commitments linked to imports and
+restricts their lines to products present in the selected import.
 
 TradeOps extends Odoo contacts with an optional business code instead of
 duplicating customers or financiers. Administrators can manage that code from
 the standard contact form, and can manage imports through TradeOps > Imports.
 The import lifecycle states are defined as shared vocabulary, but transitions
 between them are not yet enforced. The project currently has no TradeOps
-access-control configuration, reception or inventory workflow, presale,
-distribution, supplier reconciliation, API, reports, or automated test suite.
+access-control configuration, reception or inventory workflow, oversell
+monitoring, presale payments or conversion to `sale.order`, distribution,
+supplier reconciliation, API, reports, or automated test suite.
 
 ## Core principle
 

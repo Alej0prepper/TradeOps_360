@@ -70,17 +70,21 @@ Before creating a new model:
 `trade_core` provides the shared TradeOps foundation and depends on the
 standard Contacts, Product, and Inventory capabilities. `trade_import`
 contains the import domain boundary and depends on `trade_core`.
+`trade_presale` contains import-linked commercial commitments and depends on
+`trade_import` and the standard `sale` module. It does not duplicate
+`sale.order`; conversion is a later workflow.
 
-Potential modules such as `trade_presale`, `trade_distribution`, and
-`trade_reconciliation` will be created only when there is a concrete
-architectural reason to separate responsibilities. No business model is part
-of `trade_core`, which currently owns `trade.port`; `trade_import` owns
-`trade.import` and `trade.import.line`.
+Potential modules such as `trade_distribution` and `trade_reconciliation` will
+be created only when there is a concrete architectural reason to separate
+responsibilities. No business model is part of `trade_core`, which currently
+owns `trade.port`; `trade_import` owns `trade.import` and its import children;
+and `trade_presale` owns `trade.presale` and `trade.presale.line`.
 
 ## User interface
 
 `trade_core` extends the standard contact form through view inheritance and
 XPath so that `trade_code` appears without copying Odoo's view. `trade_import`
 provides the import list and form views, plus the TradeOps > Imports action and
-menu. Access controls are deliberately not part of these modules yet; they
-will be introduced with the corresponding security milestone.
+menu. `trade_presale` provides the TradeOps > Presales action and form. Access
+controls are deliberately not part of these modules yet; they will be
+introduced with the corresponding security milestone.
