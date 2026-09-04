@@ -71,8 +71,9 @@ Before creating a new model:
 standard Contacts, Product, and Inventory capabilities. `trade_import`
 contains the import domain boundary and depends on `trade_core`.
 `trade_presale` contains import-linked commercial commitments and depends on
-`trade_import` and the standard `sale` module. It does not duplicate
-`sale.order`; conversion is a later workflow.
+`trade_import` and the standard `sale` module. It converts an eligible
+confirmed presale into a standard `sale.order` quotation; it does not duplicate
+the Sales workflow.
 
 Potential modules such as `trade_distribution` and `trade_reconciliation` will
 be created only when there is a concrete architectural reason to separate

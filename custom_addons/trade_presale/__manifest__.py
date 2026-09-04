@@ -1,6 +1,6 @@
 {
     "name": "TradeOps Presales",
-    "version": "17.0.1.0.0",
+    "version": "17.0.1.1.0",
     "summary": "Import-linked presales for TradeOps 360",
     "category": "Operations",
     "license": "LGPL-3",
