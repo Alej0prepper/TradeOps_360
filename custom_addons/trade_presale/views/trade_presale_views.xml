@@ -20,6 +20,13 @@
         <field name="arch" type="xml">
             <form string="Presale">
                 <header>
+                    <button
+                        name="action_convert_to_sale"
+                        type="object"
+                        string="Convert to Sale Order"
+                        class="btn-primary"
+                        invisible="state != 'confirmed' or sale_order_id"
+                    />
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -31,6 +38,7 @@
                         <field name="import_id"/>
                         <field name="customer_id"/>
                         <field name="company_id" groups="base.group_multi_company"/>
+                        <field name="sale_order_id" readonly="1"/>
                         <field name="allowed_product_ids" invisible="1"/>
                     </group>
                     <notebook>
@@ -39,6 +47,7 @@
                                 <tree editable="bottom">
                                     <field name="product_id"/>
                                     <field name="quantity"/>
+                                    <field name="unit_price"/>
                                 </tree>
                             </field>
                         </page>

@@ -22,6 +22,11 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
   are limited to products in the selected import, and ORM constraints reject
   invalid products and non-positive quantities while preserving the future
   integration point with Odoo Sales.
+- A confirmed presale for a completed import can now create one standard Odoo
+  quotation. TradeOps maps its customer, company, products, quantities, and
+  unit prices into `sale.order`, retains the resulting quotation link, and
+  marks the presale as converted so a repeated conversion cannot create a
+  duplicate sale.
 
 ## [0.0.0] - 2026-08-21
 

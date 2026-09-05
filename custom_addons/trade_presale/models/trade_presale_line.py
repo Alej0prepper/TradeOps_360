@@ -24,6 +24,11 @@ class TradePresaleLine(models.Model):
         required=True,
         default=1.0,
     )
+    unit_price = fields.Float(
+        string="Unit Price",
+        required=True,
+        default=0.0,
+    )
 
     @api.constrains("presale_id", "product_id")
     def _check_product_belongs_to_import(self):
