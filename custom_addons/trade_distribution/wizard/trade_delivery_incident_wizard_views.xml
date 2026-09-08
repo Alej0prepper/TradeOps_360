@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_trade_delivery_incident_wizard_form" model="ir.ui.view">
+        <field name="name">trade.report.delivery.incident.wizard.form</field>
+        <field name="model">trade.report.delivery.incident.wizard</field>
+        <field name="arch" type="xml"><form string="Report Delivery Incident"><group><field name="distribution_id" readonly="1"/><field name="incident_type"/><field name="incident_date"/><field name="description"/></group><footer><button name="action_confirm" type="object" string="Confirm" class="btn-primary"/><button special="cancel" string="Cancel" class="btn-secondary"/></footer></form></field>
+    </record>
+</odoo>
