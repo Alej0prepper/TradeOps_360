@@ -27,6 +27,10 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
   unit prices into `sale.order`, retains the resulting quotation link, and
   marks the presale as converted so a repeated conversion cannot create a
   duplicate sale.
+- TradeOps now records distributions linked to Odoo deliveries, derives
+  delivered and pending quantities from `stock.move.line`, and captures
+  delivery incidents through a transient Report Incident wizard without
+  duplicating Inventory quantities.
 
 ## [0.0.0] - 2026-08-21
 

@@ -89,3 +89,7 @@ provides the import list and form views, plus the TradeOps > Imports action and
 menu. `trade_presale` provides the TradeOps > Presales action and form. Access
 controls are deliberately not part of these modules yet; they will be
 introduced with the corresponding security milestone.
+
+`trade_distribution` owns distributions and delivery incidents. Distribution
+quantities are derived from linked Odoo pickings; the incident wizard is
+transient and delegates persistence to the distribution model.
