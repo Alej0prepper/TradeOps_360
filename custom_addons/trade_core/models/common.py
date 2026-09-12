@@ -33,8 +33,8 @@ class TradeDocumentMixin(models.AbstractModel):
         self.check_access_rule("write")
         if self:
             self.flush_recordset()
-            # Lock an existing aggregate, after checking access. This SQL never
-            # changes business data or replaces ORM validation and tracking.
+            # Lock existing rows after access checks. All business mutations
+            # still use the ORM, including constraints and tracking.
             self.env.cr.execute(SQL(
                 "SELECT id FROM %s WHERE id IN %s ORDER BY id FOR UPDATE",
                 SQL.identifier(self._table), tuple(self.ids),
@@ -46,8 +46,7 @@ class TradeDocumentMixin(models.AbstractModel):
             raise UserError(_("This operation is not allowed in the current state."))
 
     def _trade_internal_write(self, values):
-        # Private server-side method: no client-controlled context bypass.
-        # Business actions check their role and transition before calling it.
+        # Private server-side method: never a client-controlled context bypass.
         return super(TradeDocumentMixin, self).write(values)
 
     @api.model_create_multi
@@ -91,7 +90,7 @@ class TradeDocumentMixin(models.AbstractModel):
         return super().unlink()
 
     def _trade_check_invariants(self):
-        """Called after a direct child mutation, including edits outside forms."""
+        """Called after direct child mutations, including changes outside forms."""
         return True
 
     def _trade_open(self):
@@ -118,13 +117,24 @@ class TradeChildMixin(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         field = self._trade_parent_field
-        parents = self.env[self._fields[field].comodel_name].browse(
-            [vals[field] for vals in vals_list if vals.get(field)]
-        )
+        Parent = self.env[self._fields[field].comodel_name]
+        parents = Parent.browse([vals[field] for vals in vals_list if vals.get(field)])
         self._trade_guard_parents(parents)
-        if any(any(vals.get(key) for key in self._trade_managed_fields) for vals in vals_list):
-            raise ValidationError(_("Generated child fields cannot be supplied manually."))
-        records = super().create(vals_list)
+        prepared = []
+        for original in vals_list:
+            vals = dict(original)
+            parent = Parent.browse(vals.get(field))
+            if not parent:
+                raise ValidationError(_("A child record requires its owning document."))
+            if any(vals.get(key) for key in self._trade_managed_fields):
+                raise ValidationError(_("Generated child fields cannot be supplied manually."))
+            for key in ("company_id", "currency_id"):
+                if key in self._fields and key in vals:
+                    if vals[key] != parent[key].id:
+                        raise ValidationError(_("Child company and currency must match the owning document."))
+                    vals.pop(key)
+            prepared.append(vals)
+        records = super().create(prepared)
         records.mapped(field)._trade_check_invariants()
         return records
 

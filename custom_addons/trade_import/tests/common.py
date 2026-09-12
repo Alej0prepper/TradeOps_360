@@ -3,7 +3,7 @@ from odoo.tests.common import TransactionCase, new_test_user
 
 
 class TradeImportCase(TransactionCase):
-    """Factories use real public workflows; no forced completed states."""
+    """Factories use real public workflows and non-administrator operators."""
 
     @classmethod
     def setUpClass(cls):
@@ -33,7 +33,7 @@ class TradeImportCase(TransactionCase):
         }
 
     def _create_import(self, quantity=10.0, price=100.0):
-        return self.env["trade.import"].create(self._import_values(quantity, price))
+        return self.env["trade.import"].with_user(self.operator).create(self._import_values(quantity, price))
 
     def _start_import(self, operation):
         operation.with_user(self.operator).action_submit()
@@ -42,12 +42,12 @@ class TradeImportCase(TransactionCase):
         return operation
 
     def _receive(self, picking, quantities=None):
+        picking = picking.with_user(self.operator)
         picking.action_assign()
         for move in picking.move_ids.filtered(lambda record: record.state not in ("done", "cancel")):
             move.quantity = (quantities or {}).get(move.product_id.id, move.product_uom_qty)
             move.picked = True
-        # Standard validation creates backorders. Only the interactive question
-        # is bypassed; stock validation, lots and valuation still execute.
+        # Skip only the interactive backorder question, not stock sanity checks.
         picking.with_context(skip_backorder=True).button_validate()
         self.assertEqual(picking.state, "done")
 

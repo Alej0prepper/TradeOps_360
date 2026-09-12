@@ -4,9 +4,19 @@ from odoo.addons.trade_import.tests.common import TradeImportCase
 
 
 class TradePresaleCase(TradeImportCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.pricelist = cls.env["product.pricelist"].create({
+            "name": "TradeOps test company-currency pricelist",
+            "currency_id": cls.company.currency_id.id,
+            "company_id": cls.company.id,
+        })
+
     def _create_presale(self, operation, quantity=2.0, price=125.0):
         return self.env["trade.presale"].create({
             "import_id": operation.id, "customer_id": self.customer.id,
+            "pricelist_id": self.pricelist.id,
             "line_ids": [fields.Command.create({
                 "import_line_id": operation.line_ids[0].id,
                 "quantity": quantity, "unit_price": price,
