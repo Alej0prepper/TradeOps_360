@@ -1,0 +1,65 @@
+name: TradeOps phase 1
+on:
+  push:
+    branches: [main, 'sprint/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: tradeops-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  functional:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U odoo"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static validation
+        run: |
+          python3 -m compileall -q custom_addons
+          git diff --check
+          mkdir -p .ci/data
+      - name: Record runtime
+        run: |
+          docker pull odoo:17.0
+          docker image inspect odoo:17.0 --format '{{json .RepoDigests}}' > .ci/runtime.txt
+          git rev-parse HEAD >> .ci/runtime.txt
+      - name: Install and test real Odoo modules
+        run: |
+          set -o pipefail
+          docker run --rm --network host \
+            -e HOST=127.0.0.1 -e USER=odoo -e PASSWORD=ci-only-password \
+            -v "$PWD:/mnt/tradeops:ro" -v "$PWD/.ci/data:/var/lib/odoo" \
+            --user "$(id -u):$(id -g)" odoo:17.0 \
+            odoo --db_host=127.0.0.1 --db_user=odoo --db_password=ci-only-password \
+            -d tradeops_ci --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/tradeops/custom_addons \
+            -i trade_core,trade_import,trade_presale,trade_distribution,trade_reconciliation \
+            --without-demo=all --test-enable \
+            --test-tags /trade_core,/trade_import,/trade_presale,/trade_distribution,/trade_reconciliation \
+            --stop-after-init --log-level=test 2>&1 | tee .ci/install.log
+      - name: Archive source and diagnostics
+        if: always()
+        run: |
+          mkdir -p .ci
+          tar --exclude=.git --exclude=.ci -czf .ci/source.tar.gz .
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase-1-evidence
+          path: |
+            .ci/*.log
+            .ci/*.txt
+            .ci/source.tar.gz
+          retention-days: 14
