@@ -1,17 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="view_trade_distribution_tree" model="ir.ui.view">
-        <field name="name">trade.distribution.tree</field>
-        <field name="model">trade.distribution</field>
-        <field name="arch" type="xml"><tree string="Distributions"><field name="name"/><field name="sale_order_id"/><field name="picking_id"/><field name="expected_quantity"/><field name="delivered_quantity"/><field name="pending_quantity"/></tree></field>
+        <field name="name">trade.distribution.tree</field><field name="model">trade.distribution</field>
+        <field name="arch" type="xml"><tree><field name="name"/><field name="sale_order_id"/><field name="company_id"/><field name="state" widget="badge"/></tree></field>
     </record>
     <record id="view_trade_distribution_form" model="ir.ui.view">
-        <field name="name">trade.distribution.form</field>
-        <field name="model">trade.distribution</field>
+        <field name="name">trade.distribution.form</field><field name="model">trade.distribution</field>
         <field name="arch" type="xml">
-            <form string="Distribution"><header><button name="action_report_incident" type="object" string="Report Incident" class="btn-primary"/><field name="pending_quantity" invisible="1"/></header><sheet><group><field name="name"/><field name="sale_order_id"/><field name="picking_id"/><field name="company_id" groups="base.group_multi_company"/><field name="expected_quantity"/><field name="delivered_quantity" readonly="1"/><field name="pending_quantity" readonly="1"/></group><notebook><page string="Incidents"><field name="incident_ids"><tree><field name="incident_date"/><field name="incident_type"/><field name="description"/></tree></field></page></notebook></sheet><div class="oe_chatter"><field name="message_follower_ids"/><field name="activity_ids"/><field name="message_ids"/></div></form>
+            <form string="Distribution">
+                <header>
+                    <button name="action_start" type="object" string="Start Distribution" class="btn-primary" invisible="state != 'draft'" groups="trade_core.group_trade_operator"/>
+                    <button name="action_report_incident" type="object" string="Report Incident" invisible="state != 'active'" groups="trade_core.group_trade_operator"/>
+                    <button name="action_close" type="object" string="Close Distribution" class="btn-primary" invisible="state != 'active'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ['draft', 'active']" groups="trade_core.group_trade_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" invisible="not legacy_review_required">Historical distribution: review its provenance before using the new workflow.</div>
+                    <field name="legacy_review_required" invisible="True"/>
+                    <div class="oe_button_box" name="button_box"><button name="action_open_deliveries" type="object" string="Deliveries / Returns" class="oe_stat_button" icon="fa-truck"/></div>
+                    <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>
+                    <group>
+                        <field name="company_id"/>
+                        <field name="sale_order_id" readonly="state != 'draft'" domain="[('state', '=', 'sale'), ('trade_presale_id', '!=', False)]"/>
+                        <field name="picking_id" readonly="state != 'draft'"/>
+                    </group>
+                    <field name="line_ids" readonly="True">
+                        <tree>
+                            <field name="sale_line_id"/><field name="product_id"/><field name="uom_id"/>
+                            <field name="expected_quantity"/><field name="delivered_quantity"/><field name="pending_quantity"/>
+                        </tree>
+                    </field>
+                    <field name="has_uniform_uom" invisible="True"/>
+                    <group string="Summary in a Common Unit" invisible="not has_uniform_uom">
+                        <field name="summary_uom_id"/><field name="expected_quantity"/>
+                        <field name="delivered_quantity"/><field name="pending_quantity"/>
+                    </group>
+                    <p>Quantities come from standard sale deliveries, including returns. Reservations are not deliveries; quantities in different units are not added together.</p>
+                    <notebook>
+                        <page string="Incidents">
+                            <field name="incident_ids" readonly="True"><tree><field name="incident_date"/><field name="incident_type"/><field name="description"/><field name="responsible_id"/><field name="state" widget="badge"/></tree></field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter"><field name="message_follower_ids"/><field name="activity_ids"/><field name="message_ids"/></div>
+            </form>
         </field>
     </record>
+    <record id="view_distribution_search" model="ir.ui.view">
+        <field name="name">trade.distribution.search</field><field name="model">trade.distribution</field>
+        <field name="arch" type="xml"><search><field name="name"/><field name="sale_order_id"/><filter name="active" string="Active" domain="[('state', '=', 'active')]"/><group expand="0" string="Group By"><filter name="state" string="Status" context="{'group_by': 'state'}"/></group></search></field>
+    </record>
     <record id="action_trade_distribution" model="ir.actions.act_window"><field name="name">Distributions</field><field name="res_model">trade.distribution</field><field name="view_mode">tree,form</field></record>
-    <menuitem id="menu_tradeops_distributions" name="Distributions" parent="trade_import.menu_tradeops_root" action="action_trade_distribution" sequence="30"/>
+    <menuitem id="menu_tradeops_distributions" name="Distributions" parent="trade_core.menu_tradeops_root" action="action_trade_distribution" sequence="30" groups="trade_core.group_trade_viewer"/>
 </odoo>

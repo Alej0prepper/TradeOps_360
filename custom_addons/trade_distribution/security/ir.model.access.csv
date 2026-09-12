@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+distribution_viewer,Distribution consultation,model_trade_distribution,trade_core.group_trade_viewer,1,0,0,0
+distribution_operator,Distribution operations,model_trade_distribution,trade_core.group_trade_operator,1,1,1,1
+line_viewer,Distribution line consultation,model_trade_distribution_line,trade_core.group_trade_viewer,1,0,0,0
+line_operator,Distribution line operations,model_trade_distribution_line,trade_core.group_trade_operator,1,1,1,1
+incident_viewer,Incident consultation,model_trade_delivery_incident,trade_core.group_trade_viewer,1,0,0,0
+incident_operator,Incident operations,model_trade_delivery_incident,trade_core.group_trade_operator,1,1,1,0
+wizard_operator,Incident wizard,model_trade_report_delivery_incident_wizard,trade_core.group_trade_operator,1,1,1,1
