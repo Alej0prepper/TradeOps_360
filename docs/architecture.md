@@ -107,3 +107,11 @@ Chatter and manually assigned Odoo activities. Presales and reconciliations
 reuse `mail.thread`. Their important state fields use Odoo tracking, while
 business actions post concise messages to the associated record. No custom
 notification, audit, activity, integration, or reporting model is introduced.
+
+## Verification and release
+
+The critical business rules are protected with Odoo `TransactionCase` suites
+inside the relevant addons. The repository also provides a release-readiness
+checklist covering a clean test database, staging module upgrade, backups, and
+post-upgrade smoke tests. It does not prescribe production infrastructure or
+replace the operational controls of the Odoo deployment.
