@@ -4,75 +4,88 @@
         <field name="name">trade.reconciliation.tree</field>
         <field name="model">trade.reconciliation</field>
         <field name="arch" type="xml">
-            <tree string="Reconciliations">
-                <field name="name"/>
-                <field name="supplier_id"/>
-                <field name="reconciliation_date"/>
-                <field name="company_id" groups="base.group_multi_company"/>
-                <field name="total_amount"/>
-                <field name="state" widget="badge"/>
+            <tree>
+                <field name="name"/><field name="supplier_id"/>
+                <field name="reconciliation_date"/><field name="company_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="total_amount"/><field name="adjustment_total"/>
+                <field name="net_total"/><field name="state" widget="badge"/>
             </tree>
         </field>
     </record>
-
     <record id="view_trade_reconciliation_form" model="ir.ui.view">
         <field name="name">trade.reconciliation.form</field>
         <field name="model">trade.reconciliation</field>
         <field name="arch" type="xml">
-            <form string="Reconciliation">
+            <form string="Commercial Reconciliation">
                 <header>
-                    <button
-                        name="action_reconcile"
-                        type="object"
-                        string="Reconcile"
-                        class="btn-primary"
-                        invisible="state != 'draft'"
-                    />
+                    <button name="action_reconcile" type="object" string="Confirm Statement" class="btn-primary" invisible="state != 'draft'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_add_adjustment" type="object" string="Record Adjustment" invisible="state != 'confirmed' or legacy_review_required" groups="trade_core.group_trade_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name" readonly="state != 'draft'"/></h1>
-                    </div>
+                    <div class="alert alert-info">Confirmed sales subtotals, excluding taxes. This commercial statement is not an accounting reconciliation, supplier balance or payment certificate.</div>
+                    <div class="alert alert-warning" invisible="not legacy_review_required">Historical statement: review provenance and migration snapshots before further operations.</div>
+                    <field name="legacy_review_required" invisible="True"/>
+                    <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>
                     <group>
                         <field name="supplier_id" readonly="state != 'draft'"/>
                         <field name="reconciliation_date" readonly="state != 'draft'"/>
-                        <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
-                        <field name="currency_id" groups="base.group_multi_currency" readonly="state != 'draft'"/>
-                        <field name="total_amount" readonly="1"/>
+                        <field name="company_id"/><field name="currency_id"/>
+                        <field name="confirmed_at"/><field name="confirmed_by_id"/>
                     </group>
                     <notebook>
-                        <page string="Sales">
+                        <page string="Sales and Closing Snapshots">
                             <field name="line_ids" readonly="state != 'draft'">
                                 <tree editable="bottom">
-                                    <field name="sale_line_id"/>
-                                    <field name="amount" readonly="1"/>
-                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="sale_line_id" domain="[('state', '=', 'sale'), ('company_id', '=', parent.company_id), ('order_id.trade_import_id.supplier_id', '=', parent.supplier_id)]" options="{'no_create': True}"/>
+                                    <field name="amount"/>
+                                    <field name="snapshot_sale_reference" column_invisible="parent.state != 'confirmed'"/>
+                                    <field name="snapshot_product_name" column_invisible="parent.state != 'confirmed'"/>
+                                    <field name="snapshot_quantity" column_invisible="parent.state != 'confirmed'"/>
+                                    <field name="snapshot_uom_name" column_invisible="parent.state != 'confirmed'"/>
+                                    <field name="snapshot_unit_price" column_invisible="parent.state != 'confirmed'"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Immutable Corrections">
+                            <field name="adjustment_ids" readonly="True">
+                                <tree create="False" delete="False">
+                                    <field name="create_date"/><field name="create_uid"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount"/><field name="reason"/>
                                 </tree>
                             </field>
                         </page>
                     </notebook>
+                    <group class="oe_subtotal_footer oe_right">
+                        <field name="total_amount"/><field name="adjustment_total"/><field name="net_total"/>
+                    </group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <div class="oe_chatter"><field name="message_follower_ids"/><field name="message_ids"/></div>
             </form>
         </field>
     </record>
-
+    <record id="view_reconciliation_search" model="ir.ui.view">
+        <field name="name">trade.reconciliation.search</field>
+        <field name="model">trade.reconciliation</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/><field name="supplier_id"/>
+                <filter name="draft" string="Draft statements" domain="[('state', '=', 'draft')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="supplier" string="Supplier" context="{'group_by': 'supplier_id'}"/>
+                    <filter name="state" string="Status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="action_trade_reconciliation" model="ir.actions.act_window">
-        <field name="name">Reconciliations</field>
+        <field name="name">Commercial Reconciliations</field>
         <field name="res_model">trade.reconciliation</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem
-        id="menu_tradeops_reconciliations"
-        name="Reconciliations"
-        parent="trade_import.menu_tradeops_root"
-        action="action_trade_reconciliation"
-        sequence="40"
-    />
+    <menuitem id="menu_tradeops_reconciliations" name="Commercial Reconciliations" parent="trade_core.menu_tradeops_root" action="action_trade_reconciliation" sequence="40" groups="trade_core.group_trade_viewer"/>
 </odoo>

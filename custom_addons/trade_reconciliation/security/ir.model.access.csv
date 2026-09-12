@@ -1,3 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_trade_reconciliation_user,trade.reconciliation user,model_trade_reconciliation,base.group_user,1,1,1,1
-access_trade_reconciliation_line_user,trade.reconciliation.line user,model_trade_reconciliation_line,base.group_user,1,1,1,1
+access_trade_reconciliation_user,Reconciliation operations,model_trade_reconciliation,trade_core.group_trade_operator,1,1,1,1
+access_trade_reconciliation_line_user,Reconciliation line operations,model_trade_reconciliation_line,trade_core.group_trade_operator,1,1,1,1
+reconciliation_viewer,Reconciliation consultation,model_trade_reconciliation,trade_core.group_trade_viewer,1,0,0,0
+line_viewer,Reconciliation line consultation,model_trade_reconciliation_line,trade_core.group_trade_viewer,1,0,0,0
+adjustment_viewer,Adjustment consultation,model_trade_reconciliation_adjustment,trade_core.group_trade_viewer,1,0,0,0
+adjustment_manager,Adjustment creation,model_trade_reconciliation_adjustment,trade_core.group_trade_manager,1,0,1,0
+wizard_manager,Adjustment wizard,model_trade_reconciliation_adjustment_wizard,trade_core.group_trade_manager,1,1,1,1
