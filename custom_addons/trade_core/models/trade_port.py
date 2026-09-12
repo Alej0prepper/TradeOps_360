@@ -10,24 +10,25 @@ class TradePort(models.Model):
     name = fields.Char(required=True)
     code = fields.Char(required=True, index=True)
     active = fields.Boolean(default=True)
+    _sql_constraints = [("code_unique", "unique(code)", "Port codes must be unique.")]
 
-    _sql_constraints = [
-        ("code_unique", "unique(code)", "Port codes must be unique."),
-    ]
+    @api.model
+    def _normalize_values(self, vals):
+        result = dict(vals)
+        for key in ("name", "code"):
+            if key in result:
+                value = str(result[key] or "").strip()
+                if not value:
+                    raise ValidationError(_("A port requires a non-empty name and code."))
+                result[key] = value.upper() if key == "code" else value
+        return result
 
     @api.model_create_multi
     def create(self, vals_list):
-        return super().create([
-            dict(vals, code=(vals.get("code") or "").strip().upper())
-            for vals in vals_list
-        ])
+        for vals in vals_list:
+            if not vals.get("name") or not vals.get("code"):
+                raise ValidationError(_("A port requires a non-empty name and code."))
+        return super().create([self._normalize_values(vals) for vals in vals_list])
 
     def write(self, vals):
-        if "code" in vals:
-            vals = dict(vals, code=(vals["code"] or "").strip().upper())
-        return super().write(vals)
-
-    @api.constrains("code", "name")
-    def _check_not_blank(self):
-        if any(not record.code.strip() or not record.name.strip() for record in self):
-            raise ValidationError(_("A port requires a non-empty name and code."))
+        return super().write(self._normalize_values(vals))

@@ -31,8 +31,19 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - name: Configure disposable demonstration identity
+        run: |
+          value="$(openssl rand -hex 24)"
+          echo "::add-mask::$value"
+          echo "TRADEOPS_DEMO_PASSWORD=$value" >> "$GITHUB_ENV"
       - name: Install, test, demonstrate, update and restore
         run: bash scripts/ci.sh
+      - name: Check browser forms and the PDF report
+        run: bash scripts/ci-ui.sh
+      - name: Rehearse the documented Docker setup and recovery
+        run: bash scripts/ci-compose.sh
+      - name: Require complete automated evidence
+        run: python3 scripts/validate_evidence.py .ci --full
       - name: Archive source and diagnostics
         if: always()
         run: |
@@ -48,4 +59,5 @@ jobs:
             .ci/*.txt
             .ci/source.tar.gz
             .ci/data/evidence/
+            .ci/ui/package-lock.json
           retention-days: 14

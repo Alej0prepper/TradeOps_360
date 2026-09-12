@@ -1,0 +1,39 @@
+name: tradeops-phase1
+services:
+  db:
+    image: postgres:16@sha256:f1c3376c26f2609ab9f29f71f824103fe2fcd8ee0346485cb6122a4f93df6f94
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  odoo:
+    image: odoo:17.0@sha256:8779f8157ddcc37b84014c94646073f46fd4ad776b7a5d95fc3b0dc73a24a8fa
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: [python3, /opt/tradeops/odoo-entrypoint.py]
+    command: ['-d', '${ODOO_DB:-tradeops_dev}', '--db-filter=^${ODOO_DB:-tradeops_dev}$$']
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      ODOO_MASTER_PASSWORD: ${ODOO_MASTER_PASSWORD:?Set ODOO_MASTER_PASSWORD in .env}
+      TRADEOPS_ADMIN_PASSWORD: ${TRADEOPS_ADMIN_PASSWORD:-}
+      TRADEOPS_ADMIN_EMAIL: ${TRADEOPS_ADMIN_EMAIL:-admin@example.test}
+    ports:
+      - '127.0.0.1:${ODOO_HTTP_PORT:-8070}:8069'
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ./custom_addons:/mnt/extra-addons:ro
+      - ./scripts:/opt/tradeops:ro
+      - ./config:/etc/tradeops:ro
+volumes:
+  postgres-data:
+  odoo-data:
