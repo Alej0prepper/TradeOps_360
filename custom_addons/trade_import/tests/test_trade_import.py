@@ -95,7 +95,7 @@ class TestTradeImport(TradeImportCase):
         with self.assertRaises(AccessError), self.env.cr.savepoint():
             operation.line_ids.with_user(other_user).read(["quantity"])
         product = self.env["product.product"].create({"name": "Private B product", "company_id": other.id})
-        with self.assertRaises((UserError, ValidationError)), self.env.cr.savepoint():
+        with self.assertRaises(UserError), self.env.cr.savepoint():
             operation.line_ids.write({"product_id": product.id})
 
     def test_partial_receipts_complete_only_after_physical_receipt(self):
@@ -112,6 +112,19 @@ class TestTradeImport(TradeImportCase):
         self.assertEqual(operation.line_ids.received_quantity, 10)
         with self.assertRaises(UserError), self.env.cr.savepoint():
             operation.action_cancel()
+
+    def test_lot_is_required_and_standard_inventory_creates_it(self):
+        self.first_product.tracking = "lot"
+        operation = self._start_import(self._create_import())
+        picking = operation.picking_ids
+        picking.move_ids.quantity = 10
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            picking.with_context(skip_backorder=True).button_validate()
+        picking.move_line_ids.lot_name = operation.name
+        picking.with_context(skip_backorder=True).button_validate()
+        self.assertEqual(operation.state, "completed")
+        self.assertEqual(picking.move_line_ids.lot_id.name, operation.name)
+        self.assertEqual(picking.move_line_ids.lot_id.product_id, self.first_product)
 
     def test_no_duplicate_purchase_or_source_mutation(self):
         operation = self._start_import(self._create_import())

@@ -1,78 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <record id="view_trade_presale_tree" model="ir.ui.view">
-        <field name="name">trade.presale.tree</field>
-        <field name="model">trade.presale</field>
+        <field name="name">trade.presale.tree</field><field name="model">trade.presale</field>
         <field name="arch" type="xml">
-            <tree string="Presales">
-                <field name="name"/>
-                <field name="import_id"/>
-                <field name="customer_id"/>
-                <field name="company_id" groups="base.group_multi_company"/>
-                <field name="state" widget="badge"/>
+            <tree decoration-warning="is_overcommitted">
+                <field name="name"/><field name="import_id"/><field name="customer_id"/>
+                <field name="company_id"/><field name="state" widget="badge"/>
+                <field name="is_overcommitted" string="Overcommitted"/>
             </tree>
         </field>
     </record>
-
     <record id="view_trade_presale_form" model="ir.ui.view">
-        <field name="name">trade.presale.form</field>
-        <field name="model">trade.presale</field>
+        <field name="name">trade.presale.form</field><field name="model">trade.presale</field>
         <field name="arch" type="xml">
             <form string="Presale">
                 <header>
-                    <button
-                        name="action_convert_to_sale"
-                        type="object"
-                        string="Convert to Sale Order"
-                        class="btn-primary"
-                        invisible="state != 'confirmed' or sale_order_id"
-                    />
+                    <button name="action_confirm" type="object" string="Confirm Commitment" class="btn-primary" invisible="state != 'draft'" groups="trade_core.group_trade_operator"/>
+                    <button name="action_return_to_draft" type="object" string="Return to Draft" invisible="state != 'confirmed'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_convert_to_sale" type="object" string="Create Quotation" class="btn-primary" invisible="state != 'confirmed'" groups="trade_core.group_trade_operator"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ['draft', 'confirmed']" groups="trade_core.group_trade_operator"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1><field name="name"/></h1>
-                    </div>
+                    <div class="alert alert-warning" invisible="not is_overcommitted">Commercial commitments exceed an imported product's expected quantity. This is a warning, not a stock reservation.</div>
+                    <div class="alert alert-warning" invisible="not legacy_review_required">This historical presale requires migration review.</div>
+                    <field name="legacy_review_required" invisible="True"/>
+                    <field name="is_overcommitted" invisible="True"/>
+                    <div class="oe_button_box" name="button_box"><button name="action_open_sale" type="object" string="Quotation" class="oe_stat_button" icon="fa-shopping-cart" invisible="not sale_order_id"/></div>
+                    <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>
                     <group>
-                        <field name="import_id"/>
-                        <field name="customer_id"/>
-                        <field name="company_id" groups="base.group_multi_company"/>
-                        <field name="sale_order_id" readonly="1"/>
-                        <field name="allowed_product_ids" invisible="1"/>
+                        <field name="company_id"/><field name="currency_id"/>
+                        <field name="import_id" readonly="state != 'draft'"/>
+                        <field name="customer_id" readonly="state != 'draft'"/>
+                        <field name="pricelist_id" required="True" readonly="state != 'draft'"/>
+                        <field name="sale_order_id"/>
                     </group>
-                    <notebook>
-                        <page string="Products">
-                            <field name="line_ids">
-                                <tree editable="bottom">
-                                    <field name="presale_id" invisible="1"/>
-                                    <field name="product_id"/>
-                                    <field name="quantity"/>
-                                    <field name="unit_price"/>
-                                </tree>
-                            </field>
-                        </page>
-                    </notebook>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <tree editable="bottom">
+                            <field name="company_id" column_invisible="True"/><field name="currency_id" column_invisible="True"/>
+                            <field name="import_line_id" domain="[('import_id', '=', parent.import_id)]" options="{'no_create': True}"/>
+                            <field name="product_id"/><field name="uom_id"/><field name="quantity"/><field name="unit_price"/>
+                        </tree>
+                    </field>
+                    <p>Phase 1 uses company currency. Confirming a presale records demand; only standard Inventory operations move or reserve stock.</p>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <div class="oe_chatter"><field name="message_follower_ids"/><field name="message_ids"/></div>
             </form>
         </field>
     </record>
-
-    <record id="action_trade_presale" model="ir.actions.act_window">
-        <field name="name">Presales</field>
-        <field name="res_model">trade.presale</field>
-        <field name="view_mode">tree,form</field>
+    <record id="view_trade_presale_search" model="ir.ui.view">
+        <field name="name">trade.presale.search</field><field name="model">trade.presale</field>
+        <field name="arch" type="xml"><search><field name="name"/><field name="import_id"/><field name="customer_id"/><filter name="confirmed" string="Awaiting conversion" domain="[('state', '=', 'confirmed')]"/><group expand="0" string="Group By"><filter name="state" string="Status" context="{'group_by': 'state'}"/></group></search></field>
     </record>
-
-    <menuitem
-        id="menu_tradeops_presales"
-        name="Presales"
-        parent="trade_import.menu_tradeops_root"
-        action="action_trade_presale"
-        sequence="20"
-    />
+    <record id="action_trade_presale" model="ir.actions.act_window"><field name="name">Presales</field><field name="res_model">trade.presale</field><field name="view_mode">tree,form</field></record>
+    <menuitem id="menu_tradeops_presales" name="Presales" parent="trade_core.menu_tradeops_root" action="action_trade_presale" sequence="20" groups="trade_core.group_trade_viewer"/>
 </odoo>

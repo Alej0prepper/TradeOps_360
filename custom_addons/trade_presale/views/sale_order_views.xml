@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_sale_order_tradeops" model="ir.ui.view">
+        <field name="name">sale.order.form.tradeops</field><field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="trade_presale_id" readonly="True" groups="trade_core.group_trade_viewer"/>
+                <field name="trade_import_id" readonly="True" groups="trade_core.group_trade_viewer"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

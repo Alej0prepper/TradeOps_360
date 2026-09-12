@@ -1,16 +1,14 @@
 {
     "name": "TradeOps Presales",
-    "version": "17.0.1.1.0",
-    "summary": "Import-linked presales for TradeOps 360",
+    "version": "17.0.2.0.0",
+    "summary": "Controlled commercial commitments and idempotent quotations",
     "category": "Operations",
     "license": "LGPL-3",
-    "depends": [
-        "trade_import",
-        "sale",
-        "mail",
-    ],
+    "depends": ["trade_import", "sale_stock", "mail"],
     "data": [
-        "views/trade_presale_views.xml",
+        "security/ir.model.access.csv", "security/trade_rules.xml",
+        "views/trade_presale_views.xml", "views/sale_order_views.xml",
+        "views/trade_import_views.xml",
     ],
     "installable": True,
     "application": False,

@@ -8,6 +8,7 @@ class TradeImportLine(models.Model):
     _name = "trade.import.line"
     _description = "Trade Import Line"
     _inherit = "trade.child.mixin"
+    _rec_name = "product_id"
     _order = "id"
     _trade_parent_field = "import_id"
     _trade_managed_fields = (
@@ -25,7 +26,9 @@ class TradeImportLine(models.Model):
     purchase_subtotal = fields.Monetary(compute="_compute_purchase_subtotal", store=True)
     allocated_expense = fields.Monetary(compute="_compute_landed_cost", store=True)
     real_total_cost = fields.Monetary(compute="_compute_landed_cost", store=True)
-    real_unit_cost = fields.Monetary(compute="_compute_landed_cost", store=True)
+    real_unit_cost = fields.Float(
+        string="Operational Unit Cost", compute="_compute_landed_cost", store=True, digits=(16, 6),
+    )
     purchase_line_ids = fields.One2many("purchase.order.line", "trade_import_line_id", readonly=True, copy=False)
     received_quantity = fields.Float(compute="_compute_received", digits="Product Unit of Measure")
 
@@ -45,8 +48,7 @@ class TradeImportLine(models.Model):
             expense = currency.round(sum(operation.expense_ids.mapped("amount")))
             cumulative = previous = 0.0
             if total > 0:
-                # Cumulative rounding allocates residual cents deterministically
-                # without a negative final-line residual.
+                # Cumulative rounding allocates residual cents deterministically.
                 for sibling in operation.line_ids:
                     cumulative += sibling.purchase_subtotal
                     rounded = currency.round(expense * cumulative / total)
@@ -55,7 +57,8 @@ class TradeImportLine(models.Model):
                         break
                     previous = rounded
             line.allocated_expense = allocated
-            line.real_total_cost = line.purchase_subtotal + allocated
+            line.real_total_cost = currency.round(line.purchase_subtotal + allocated)
+            # Unit ratios need more precision than rounded document totals.
             line.real_unit_cost = line.real_total_cost / line.quantity if line.quantity else 0.0
 
     @api.depends("purchase_line_ids.qty_received", "purchase_line_ids.product_uom", "uom_id")
