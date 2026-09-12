@@ -27,9 +27,11 @@ distributions, incidents, and supplier reconciliations from the TradeOps menu.
 Supplier reconciliations group confirmed Odoo sale lines and prevent a sale
 line from belonging to more than one reconciliation. The import lifecycle
 states are defined as shared vocabulary, but transitions between them are not
-yet enforced. The project currently has no reception or inventory workflow,
-oversell monitoring, presale payments, API, reports, or automated test suite
-for the full application.
+yet enforced. Imports, presales, distributions, and reconciliations use Odoo's
+Chatter for tracking and business events; imports and distributions also make
+standard activities available. The project currently has no reception or
+inventory workflow, oversell monitoring, presale payments, external API,
+reports, or automated test suite for the full application.
 
 ## Core principle
 

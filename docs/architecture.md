@@ -99,3 +99,11 @@ transient and delegates persistence to the distribution model.
 `trade_reconciliation` provides a list and form under TradeOps. Its lines are
 limited by ORM validation to confirmed sales from the same company and currency,
 while PostgreSQL enforces the final one-sale-line-per-reconciliation invariant.
+
+## Operational observability
+
+Imports and distributions reuse `mail.thread` and `mail.activity.mixin` for
+Chatter and manually assigned Odoo activities. Presales and reconciliations
+reuse `mail.thread`. Their important state fields use Odoo tracking, while
+business actions post concise messages to the associated record. No custom
+notification, audit, activity, integration, or reporting model is introduced.

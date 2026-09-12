@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class TradeReconciliation(models.Model):
     _name = "trade.reconciliation"
     _description = "Trade Supplier Reconciliation"
+    _inherit = ["mail.thread"]
     _order = "id desc"
 
     name = fields.Char(
@@ -56,6 +57,7 @@ class TradeReconciliation(models.Model):
         string="Status",
         required=True,
         default="draft",
+        tracking=True,
     )
 
     @api.depends("line_ids.amount")
@@ -75,6 +77,7 @@ class TradeReconciliation(models.Model):
 
         self.line_ids._check_reconcilable_sale_lines()
         self.write({"state": "confirmed"})
+        self.message_post(body="Supplier reconciliation confirmed.")
 
 
 class TradeReconciliationLine(models.Model):

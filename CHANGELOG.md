@@ -35,6 +35,10 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
   A reconciliation calculates its total in a single currency and can be
   confirmed only when it has valid lines. A database uniqueness constraint and
   business validation prevent a sale line from being included twice.
+- TradeOps records operational history through Odoo Chatter instead of custom
+  notification or audit models. State changes are tracked on imports,
+  presales, and reconciliations; converting a presale, reporting an incident,
+  and confirming a reconciliation each leave a business message.
 
 ## [0.0.0] - 2026-08-21
 

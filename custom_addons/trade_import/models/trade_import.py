@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class TradeImport(models.Model):
     _name = "trade.import"
     _description = "Trade Import"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
     name = fields.Char(
@@ -102,6 +103,7 @@ class TradeImport(models.Model):
         string="Status",
         required=True,
         default="draft",
+        tracking=True,
     )
     notes = fields.Text(
         string="Notes",

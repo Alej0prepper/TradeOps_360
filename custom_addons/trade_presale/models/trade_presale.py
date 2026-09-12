@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 class TradePresale(models.Model):
     _name = "trade.presale"
     _description = "Trade Presale"
+    _inherit = ["mail.thread"]
     _order = "id desc"
 
     name = fields.Char(
@@ -39,6 +40,7 @@ class TradePresale(models.Model):
         string="Status",
         required=True,
         default="draft",
+        tracking=True,
     )
     line_ids = fields.One2many(
         comodel_name="trade.presale.line",
@@ -102,6 +104,9 @@ class TradePresale(models.Model):
                 "sale_order_id": sale_order.id,
                 "state": "converted",
             }
+        )
+        self.message_post(
+            body="Presale converted to sale order %s." % sale_order.display_name
         )
 
         return sale_order
