@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rule_import_company" model="ir.rule">
+        <field name="name">Import companies</field><field name="model_id" ref="model_trade_import"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_import_line_company" model="ir.rule">
+        <field name="name">Import line companies</field><field name="model_id" ref="model_trade_import_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_import_expense_company" model="ir.rule">
+        <field name="name">Expense companies</field><field name="model_id" ref="model_trade_import_expense"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+import_viewer,Import consultation,model_trade_import,trade_core.group_trade_viewer,1,0,0,0
+import_operator,Import operations,model_trade_import,trade_core.group_trade_operator,1,1,1,1
+line_viewer,Import line consultation,model_trade_import_line,trade_core.group_trade_viewer,1,0,0,0
+line_operator,Import line operations,model_trade_import_line,trade_core.group_trade_operator,1,1,1,1
+expense_viewer,Expense consultation,model_trade_import_expense,trade_core.group_trade_viewer,1,0,0,0
+expense_operator,Expense operations,model_trade_import_expense,trade_core.group_trade_operator,1,1,1,1

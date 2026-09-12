@@ -4,103 +4,99 @@
         <field name="name">trade.import.tree</field>
         <field name="model">trade.import</field>
         <field name="arch" type="xml">
-            <tree string="Imports">
-                <field name="name"/>
-                <field name="import_date"/>
-                <field name="customer_id"/>
-                <field name="origin_port_id"/>
-                <field name="destination_port_id"/>
-                <field name="currency_id" invisible="1"/>
-                <field name="landed_total" sum="Total"/>
-                <field name="state" widget="badge"/>
+            <tree decoration-warning="legacy_review_required">
+                <field name="name"/><field name="import_date"/><field name="supplier_id"/>
+                <field name="customer_id"/><field name="company_id"/>
+                <field name="currency_id" column_invisible="True"/><field name="landed_total"/>
+                <field name="state" widget="badge"/><field name="legacy_review_required" column_invisible="True"/>
             </tree>
         </field>
     </record>
-
+    <record id="view_trade_import_search" model="ir.ui.view">
+        <field name="name">trade.import.search</field><field name="model">trade.import</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/><field name="supplier_id"/><field name="customer_id"/>
+                <filter name="open" string="Open" domain="[('state', 'not in', ['completed', 'cancelled'])]"/>
+                <filter name="review" string="Legacy review" domain="[('legacy_review_required', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="by_company" string="Company" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="view_trade_import_form" model="ir.ui.view">
-        <field name="name">trade.import.form</field>
-        <field name="model">trade.import</field>
+        <field name="name">trade.import.form</field><field name="model">trade.import</field>
         <field name="arch" type="xml">
             <form string="Import">
                 <header>
-                    <field name="state" widget="statusbar"/>
+                    <button name="action_submit" type="object" string="Submit for Review" class="btn-primary" invisible="state != 'draft' or legacy_review_required" groups="trade_core.group_trade_operator"/>
+                    <button name="action_validate" type="object" string="Validate / Create RFQ" class="btn-primary" invisible="state != 'document_review'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_return_to_draft" type="object" string="Return to Draft" invisible="state != 'document_review'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_start_transit" type="object" string="Confirm Purchase / In Transit" invisible="state != 'validated'" groups="trade_core.group_trade_manager"/>
+                    <button name="action_receive" type="object" string="Receive Goods" invisible="state not in ['in_transit', 'receiving', 'partially_received']" groups="trade_core.group_trade_operator"/>
+                    <button name="action_refresh_receipts" type="object" string="Refresh Receipts" invisible="state not in ['in_transit', 'receiving', 'partially_received', 'completed']" groups="trade_core.group_trade_operator"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ['completed', 'partially_received', 'cancelled']" groups="trade_core.group_trade_manager" confirm="Cancel this import and its unreceived purchase?"/>
+                    <button name="action_review_legacy" type="object" string="Review Migrated Operation" invisible="not legacy_review_required" groups="trade_core.group_trade_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,document_review,validated,in_transit,partially_received,completed"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <label for="name"/>
-                        <h1>
-                            <field name="name"/>
-                        </h1>
+                    <div class="alert alert-warning" invisible="not legacy_review_required">This historical operation requires review before using the new workflow.</div>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_purchase" type="object" string="Purchase" class="oe_stat_button" icon="fa-shopping-cart"/>
+                        <button name="action_open_receipts" type="object" string="Receipts" class="oe_stat_button" icon="fa-truck"/>
                     </div>
+                    <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>
+                    <field name="legacy_review_required" invisible="True"/>
                     <group>
-                        <group string="Operation">
-                            <field name="import_date"/>
-                            <field name="customer_id"/>
-                            <field name="financier_id"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="currency_id"/>
+                        <group>
+                            <field name="company_id"/><field name="currency_id"/>
+                            <field name="import_date" readonly="state != 'draft'"/>
+                            <field name="supplier_id" required="True" readonly="state != 'draft'"/>
+                            <field name="customer_id" readonly="state != 'draft'"/>
+                            <field name="financier_id" readonly="state != 'draft'"/>
                         </group>
-                        <group string="Route">
-                            <field name="origin_port_id"/>
-                            <field name="destination_port_id"/>
-                            <field name="line_count" readonly="1"/>
-                            <field name="total_quantity" readonly="1"/>
-                            <field name="purchase_total" readonly="1"/>
-                            <field name="expense_total" readonly="1"/>
-                            <field name="landed_total" readonly="1"/>
+                        <group>
+                            <field name="warehouse_id" required="True" readonly="state != 'draft'"/>
+                            <field name="origin_port_id" readonly="state != 'draft'"/>
+                            <field name="destination_port_id" readonly="state != 'draft'"/>
+                            <field name="reference" readonly="state != 'draft'"/><field name="line_count"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Products">
-                            <field name="line_ids">
+                            <field name="line_ids" readonly="state != 'draft'">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
-                                    <field name="quantity"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="unit_purchase_price"/>
-                                    <field name="purchase_subtotal" readonly="1"/>
-                                    <field name="allocated_expense" readonly="1"/>
-                                    <field name="real_total_cost" readonly="1"/>
-                                    <field name="real_unit_cost" readonly="1"/>
+                                    <field name="company_id" column_invisible="True"/><field name="currency_id" column_invisible="True"/>
+                                    <field name="product_id"/><field name="uom_id"/><field name="quantity"/><field name="received_quantity"/>
+                                    <field name="unit_purchase_price"/><field name="purchase_subtotal"/>
+                                    <field name="allocated_expense"/><field name="real_total_cost"/><field name="real_unit_cost"/>
                                 </tree>
                             </field>
                         </page>
-                        <page string="Import Expenses">
-                            <field name="expense_ids">
+                        <page string="Operational Expenses">
+                            <field name="expense_ids" readonly="state != 'draft'">
                                 <tree editable="bottom">
-                                    <field name="expense_type"/>
-                                    <field name="currency_id" invisible="1"/>
-                                    <field name="amount"/>
+                                    <field name="company_id" column_invisible="True"/><field name="currency_id" column_invisible="True"/>
+                                    <field name="expense_type"/><field name="amount"/>
                                 </tree>
                             </field>
+                            <p>Operational allocation only. This does not post landed costs or accounting entries.</p>
                         </page>
-                        <page string="Notes">
-                            <field name="reference"/>
-                            <field name="notes" placeholder="Operational notes..."/>
-                        </page>
+                        <page string="Notes"><field name="notes" readonly="state != 'draft'"/></page>
                     </notebook>
+                    <group class="oe_subtotal_footer oe_right"><field name="purchase_total"/><field name="expense_total"/><field name="landed_total"/></group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <div class="oe_chatter"><field name="message_follower_ids"/><field name="activity_ids"/><field name="message_ids"/></div>
             </form>
         </field>
     </record>
-
     <record id="action_trade_import" model="ir.actions.act_window">
-        <field name="name">Imports</field>
-        <field name="res_model">trade.import</field>
-        <field name="view_mode">tree,form</field>
+        <field name="name">Imports</field><field name="res_model">trade.import</field><field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem id="menu_tradeops_root" name="TradeOps" sequence="10"/>
-    <menuitem
-        id="menu_tradeops_imports"
-        name="Imports"
-        parent="menu_tradeops_root"
-        action="action_trade_import"
-        sequence="10"
-    />
+    <record id="menu_tradeops_root" model="ir.ui.menu">
+        <field name="name">TradeOps legacy navigation</field><field name="active" eval="False"/>
+    </record>
+    <menuitem id="menu_tradeops_imports" name="Imports" parent="trade_core.menu_tradeops_root" action="action_trade_import" sequence="10" groups="trade_core.group_trade_viewer"/>
 </odoo>

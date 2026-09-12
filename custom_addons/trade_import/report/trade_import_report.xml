@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_report_trade_import" model="ir.actions.report">
+        <field name="name">Import Operational Summary</field>
+        <field name="model">trade.import</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">trade_import.report_import_summary</field>
+        <field name="report_file">trade_import.report_import_summary</field>
+        <field name="binding_model_id" ref="model_trade_import"/>
+        <field name="binding_type">report</field>
+        <field name="groups_id" eval="[(4, ref('trade_core.group_trade_viewer'))]"/>
+    </record>
+    <template id="report_import_summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Import <span t-field="o.name"/></h2>
+                        <p><strong>Operational costs only. Not an inventory valuation or payment certificate.</strong></p>
+                        <p>Company: <span t-field="o.company_id.name"/> | Status: <span t-field="o.state"/></p>
+                        <p>Supplier: <span t-field="o.supplier_id.name"/> | Customer: <span t-field="o.customer_id.name"/></p>
+                        <p>Route: <span t-field="o.origin_port_id.name"/> to <span t-field="o.destination_port_id.name"/></p>
+                        <p>Warehouse: <span t-field="o.warehouse_id.name"/> | Date: <span t-field="o.import_date"/></p>
+                        <table class="table table-sm">
+                            <thead><tr><th>Product</th><th>Unit</th><th>Expected</th><th>Received</th><th>Purchase</th><th>Expense</th><th>Total cost</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids" t-as="line">
+                                    <td><span t-field="line.product_id.display_name"/></td>
+                                    <td><span t-field="line.uom_id.name"/></td>
+                                    <td><span t-field="line.quantity"/></td>
+                                    <td><span t-field="line.received_quantity"/></td>
+                                    <td><span t-field="line.purchase_subtotal"/></td>
+                                    <td><span t-field="line.allocated_expense"/></td>
+                                    <td><span t-field="line.real_total_cost"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>Purchase: <span t-field="o.purchase_total"/> | Expenses: <span t-field="o.expense_total"/> | Total: <span t-field="o.landed_total"/></p>
+                        <h3>Expenses</h3>
+                        <table class="table table-sm"><tbody>
+                            <tr t-foreach="o.expense_ids" t-as="expense"><td><span t-field="expense.expense_type"/></td><td><span t-field="expense.amount"/></td></tr>
+                        </tbody></table>
+                        <h3>Linked documents</h3>
+                        <p>Purchases: <t t-foreach="o.purchase_order_ids" t-as="purchase"><span t-field="purchase.name"/> </t></p>
+                        <p>Receipts: <t t-foreach="o.picking_ids" t-as="picking"><span t-field="picking.name"/> (<span t-field="picking.state"/>) </t></p>
+                        <p t-field="o.notes"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
