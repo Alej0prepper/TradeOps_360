@@ -1,4 +1,4 @@
-"""Fail CI when a successful exit did not actually produce the required evidence."""
+"""Fail CI when a successful exit did not actually produce required evidence."""
 import json
 import re
 import sys
@@ -13,10 +13,14 @@ failed, errors, count = map(int, results[-1])
 if failed or errors or count < 39:
     raise AssertionError(f"Insufficient runtime evidence: {failed} failed, {errors} errors, {count} tests.")
 evidence = root / "data/evidence"
-for filename in ("concurrency.json", "verified-tradeops_ci.json", "verified-tradeops_ci_restore.json"):
+required = (
+    "concurrency.json", "verified-tradeops_ci.json",
+    "verified-tradeops_ci_restore.json", "legacy-upgrade.json",
+)
+for filename in required:
     result = json.loads((evidence / filename).read_text())
     if result.get("verified") is not True:
         raise AssertionError("Unverified acceptance result: " + filename)
 print(json.dumps({"runtime_tests": count, "failed": failed, "errors": errors,
                   "concurrent_conversion": True, "upgrade_rehearsal": True,
-                  "database_and_filestore_restore": True}, sort_keys=True))
+                  "baseline_upgrade": True, "database_and_filestore_restore": True}, sort_keys=True))
