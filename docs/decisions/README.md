@@ -2,6 +2,7 @@
 
 - [Decision 009: reconciliar líneas de venta con una restricción única](009-reconciliation-sale-line-integrity.md)
 - [Decision 010: reutilizar Chatter para la trazabilidad operacional](010-odoo-chatter-for-operational-audit.md)
+- [Decision 011: probar reglas de dominio y liberar mediante staging](011-model-tests-and-release-checklist.md)
 
 This directory records significant architectural decisions as TradeOps 360 evolves. A decision record should explain the context, the chosen approach, its consequences, and why alternatives were not selected.
 

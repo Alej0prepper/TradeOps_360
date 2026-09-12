@@ -39,6 +39,9 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
   notification or audit models. State changes are tracked on imports,
   presales, and reconciliations; converting a presale, reporting an incident,
   and confirming a reconciliation each leave a business message.
+- TradeOps now includes model-level regression tests for import costs and
+  constraints, presale conversion, distribution incidents, and reconciliation
+  integrity, plus a staging-upgrade and smoke-test checklist for releases.
 
 ## [0.0.0] - 2026-08-21
 

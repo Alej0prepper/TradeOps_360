@@ -48,6 +48,7 @@ Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconcili
 - [Roadmap](docs/roadmap.md)
 - [Architectural decisions](docs/decisions/README.md)
 - [Learning milestones](docs/learning/README.md)
+- [Release readiness](docs/release-readiness.md)
 
 ## Remaining work
 
