@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+port_viewer,Port consultation,model_trade_port,group_trade_viewer,1,0,0,0
+port_manager,Port management,model_trade_port,group_trade_manager,1,1,1,1
+sale_viewer,Sale consultation,sale.model_sale_order,group_trade_viewer,1,0,0,0
+sale_line_viewer,Sale line consultation,sale.model_sale_order_line,group_trade_viewer,1,0,0,0
+purchase_viewer,Purchase consultation,purchase.model_purchase_order,group_trade_viewer,1,0,0,0
+purchase_line_viewer,Purchase line consultation,purchase.model_purchase_order_line,group_trade_viewer,1,0,0,0
+picking_viewer,Picking consultation,stock.model_stock_picking,group_trade_viewer,1,0,0,0
+move_viewer,Move consultation,stock.model_stock_move,group_trade_viewer,1,0,0,0
+move_line_viewer,Move line consultation,stock.model_stock_move_line,group_trade_viewer,1,0,0,0
+warehouse_viewer,Warehouse consultation,stock.model_stock_warehouse,group_trade_viewer,1,0,0,0
