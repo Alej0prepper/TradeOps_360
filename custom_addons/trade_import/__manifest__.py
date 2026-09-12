@@ -6,6 +6,7 @@
     "license": "LGPL-3",
     "depends": [
         "trade_core",
+        "mail",
     ],
     "data": [
         "views/trade_import_views.xml",

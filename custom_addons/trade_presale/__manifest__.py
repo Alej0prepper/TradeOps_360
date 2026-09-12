@@ -7,6 +7,7 @@
     "depends": [
         "trade_import",
         "sale",
+        "mail",
     ],
     "data": [
         "views/trade_presale_views.xml",

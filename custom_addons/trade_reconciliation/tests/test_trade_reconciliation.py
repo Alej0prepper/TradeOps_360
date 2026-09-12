@@ -54,6 +54,11 @@ class TestTradeReconciliation(TransactionCase):
         self.assertEqual(reconciliation.state, "confirmed")
         self.assertEqual(reconciliation.total_amount, 50.0)
         self.assertEqual(len(reconciliation.line_ids), 2)
+        self.assertTrue(
+            reconciliation.message_ids.filtered(
+                lambda message: "Supplier reconciliation confirmed" in message.body
+            )
+        )
 
     def test_sale_line_cannot_be_reconciled_twice(self):
         sale_line = self._create_confirmed_sale_line(20.0)
@@ -122,8 +127,10 @@ class TestTradeReconciliation(TransactionCase):
         reconciliation = self.env["trade.reconciliation"].create(
             {"name": "RECON-EMPTY", "supplier_id": self.supplier.id}
         )
+        messages_before = reconciliation.message_ids
 
         with self.assertRaises(ValidationError):
             reconciliation.action_reconcile()
 
         self.assertEqual(reconciliation.state, "draft")
+        self.assertEqual(reconciliation.message_ids, messages_before)

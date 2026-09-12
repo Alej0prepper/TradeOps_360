@@ -7,6 +7,7 @@
     "depends": [
         "trade_presale",
         "sale",
+        "mail",
     ],
     "data": [
         "security/ir.model.access.csv",

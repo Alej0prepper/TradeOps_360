@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class TradeDistribution(models.Model):
     _name = "trade.distribution"
     _description = "Trade Distribution"
+    _inherit = ["mail.thread", "mail.activity.mixin"]
     _order = "id desc"
 
     name = fields.Char(required=True, default="New")
@@ -40,10 +41,17 @@ class TradeDistribution(models.Model):
             raise ValidationError("Incident type is required.")
         if not description or not description.strip():
             raise ValidationError("Incident description is required.")
-        return self.env["trade.delivery.incident"].create({
+        incident = self.env["trade.delivery.incident"].create({
             "distribution_id": self.id, "incident_type": incident_type,
             "description": description, "incident_date": incident_date or fields.Datetime.now(),
         })
+        self.message_post(
+            body="Delivery incident reported: %s."
+            % dict(incident._fields["incident_type"].selection).get(
+                incident.incident_type
+            )
+        )
+        return incident
 
     def action_report_incident(self):
         self.ensure_one()

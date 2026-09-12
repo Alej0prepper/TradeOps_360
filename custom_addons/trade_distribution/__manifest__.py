@@ -4,7 +4,7 @@
     "summary": "Distribution operations and delivery incidents",
     "category": "Operations",
     "license": "LGPL-3",
-    "depends": ["trade_presale", "stock"],
+    "depends": ["trade_presale", "stock", "mail"],
     "data": ["views/trade_distribution_views.xml", "wizard/trade_delivery_incident_wizard_views.xml"],
     "installable": True,
     "application": False,
