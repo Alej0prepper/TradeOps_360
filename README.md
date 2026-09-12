@@ -22,12 +22,14 @@ confirmed presales into standard Odoo quotations with a traceable link.
 
 TradeOps extends Odoo contacts with an optional business code instead of
 duplicating customers or financiers. Administrators can manage that code from
-the standard contact form, and can manage imports through TradeOps > Imports.
-The import lifecycle states are defined as shared vocabulary, but transitions
-between them are not yet enforced. The project currently has no TradeOps
-access-control configuration, reception or inventory workflow, oversell
-monitoring, presale payments, distribution,
-supplier reconciliation, API, reports, or automated test suite.
+the standard contact form, and users can manage imports, presales,
+distributions, incidents, and supplier reconciliations from the TradeOps menu.
+Supplier reconciliations group confirmed Odoo sale lines and prevent a sale
+line from belonging to more than one reconciliation. The import lifecycle
+states are defined as shared vocabulary, but transitions between them are not
+yet enforced. The project currently has no reception or inventory workflow,
+oversell monitoring, presale payments, API, reports, or automated test suite
+for the full application.
 
 ## Core principle
 

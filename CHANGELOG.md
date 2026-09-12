@@ -31,6 +31,10 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
   delivered and pending quantities from `stock.move.line`, and captures
   delivery incidents through a transient Report Incident wizard without
   duplicating Inventory quantities.
+- TradeOps now groups confirmed Odoo sale lines into supplier reconciliations.
+  A reconciliation calculates its total in a single currency and can be
+  confirmed only when it has valid lines. A database uniqueness constraint and
+  business validation prevent a sale line from being included twice.
 
 ## [0.0.0] - 2026-08-21
 

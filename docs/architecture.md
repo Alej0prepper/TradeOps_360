@@ -73,13 +73,15 @@ contains the import domain boundary and depends on `trade_core`.
 `trade_presale` contains import-linked commercial commitments and depends on
 `trade_import` and the standard `sale` module. It converts an eligible
 confirmed presale into a standard `sale.order` quotation; it does not duplicate
-the Sales workflow.
+the Sales workflow. `trade_reconciliation` depends on Sales and groups
+confirmed `sale.order.line` records under the supplier reconciliation that
+processes them.
 
-Potential modules such as `trade_distribution` and `trade_reconciliation` will
-be created only when there is a concrete architectural reason to separate
-responsibilities. No business model is part of `trade_core`, which currently
-owns `trade.port`; `trade_import` owns `trade.import` and its import children;
-and `trade_presale` owns `trade.presale` and `trade.presale.line`.
+No business model is part of `trade_core`, which currently owns `trade.port`;
+`trade_import` owns `trade.import` and its import children; `trade_presale`
+owns `trade.presale` and `trade.presale.line`; `trade_distribution` owns
+distribution records and incidents; and `trade_reconciliation` owns
+reconciliations and their sale-line links.
 
 ## User interface
 
@@ -93,3 +95,7 @@ introduced with the corresponding security milestone.
 `trade_distribution` owns distributions and delivery incidents. Distribution
 quantities are derived from linked Odoo pickings; the incident wizard is
 transient and delegates persistence to the distribution model.
+
+`trade_reconciliation` provides a list and form under TradeOps. Its lines are
+limited by ORM validation to confirmed sales from the same company and currency,
+while PostgreSQL enforces the final one-sale-line-per-reconciliation invariant.

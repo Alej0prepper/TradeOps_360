@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_trade_reconciliation_tree" model="ir.ui.view">
+        <field name="name">trade.reconciliation.tree</field>
+        <field name="model">trade.reconciliation</field>
+        <field name="arch" type="xml">
+            <tree string="Reconciliations">
+                <field name="name"/>
+                <field name="supplier_id"/>
+                <field name="reconciliation_date"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="total_amount"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_trade_reconciliation_form" model="ir.ui.view">
+        <field name="name">trade.reconciliation.form</field>
+        <field name="model">trade.reconciliation</field>
+        <field name="arch" type="xml">
+            <form string="Reconciliation">
+                <header>
+                    <button
+                        name="action_reconcile"
+                        type="object"
+                        string="Reconcile"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="state != 'draft'"/></h1>
+                    </div>
+                    <group>
+                        <field name="supplier_id" readonly="state != 'draft'"/>
+                        <field name="reconciliation_date" readonly="state != 'draft'"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        <field name="currency_id" groups="base.group_multi_currency" readonly="state != 'draft'"/>
+                        <field name="total_amount" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Sales">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="sale_line_id"/>
+                                    <field name="amount" readonly="1"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_trade_reconciliation" model="ir.actions.act_window">
+        <field name="name">Reconciliations</field>
+        <field name="res_model">trade.reconciliation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_tradeops_reconciliations"
+        name="Reconciliations"
+        parent="trade_import.menu_tradeops_root"
+        action="action_trade_reconciliation"
+        sequence="40"
+    />
+</odoo>
