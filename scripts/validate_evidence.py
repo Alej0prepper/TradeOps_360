@@ -23,6 +23,29 @@ def expected_tests(repository: Path) -> set[tuple[str, str, str, str]]:
     return expected
 
 
+def validate_ui_evidence(evidence: Path) -> None:
+    manifest = json.loads((evidence / "acceptance-manifest.json").read_text())
+    ui = json.loads((evidence / "ui-smoke.json").read_text())
+    expected = {
+        "trade.import": manifest["import_id"], "trade.presale": manifest["presale_id"],
+        "sale.order": manifest["sale_id"], "trade.distribution": manifest["distribution_id"],
+        "trade.delivery.incident": manifest["incident_id"],
+        "trade.reconciliation": manifest["reconciliation_id"],
+    }
+    forms = ui.get("forms", [])
+    if len(forms) != len(expected) or {(f.get("model"), f.get("id")) for f in forms} != set(expected.items()):
+        raise AssertionError("Browser evidence does not identify all expected documents.")
+    for form in forms:
+        field = "description" if form["model"] == "trade.delivery.incident" else "name"
+        value = form.get("expected_value")
+        if (form.get("record_identity_verified") is not True or form.get("fresh_page") is not True
+                or form.get("visible") is not True or form.get("checked_field") != field
+                or not isinstance(value, str) or not value.strip() or form.get("observed_value") != value):
+            raise AssertionError("Browser record identity was not verified: " + form["model"])
+    if ui.get("consultation_identity_verified") is not True:
+        raise AssertionError("Consultation record identity was not verified.")
+
+
 def validate(root: Path, repository: Path = ROOT, full: bool = False) -> dict:
     log = (root / "install.log").read_text()
     results = re.findall(r"(\d+) failed, (\d+) error\(s\) of (\d+) tests", log)
@@ -59,7 +82,8 @@ def validate(root: Path, repository: Path = ROOT, full: bool = False) -> dict:
                "upgrade_rehearsal": True, "baseline_upgrade": True,
                "database_and_filestore_restore": True, "full_automated_gate": full}
     if full:
-        summary.update(browser_and_pdf=True, compose_install_and_restore=True)
+        validate_ui_evidence(evidence)
+        summary.update(browser_and_pdf=True, compose_install_and_restore=True, browser_record_identity=True)
         (evidence / "final-result.json").write_text(json.dumps(summary, indent=2) + "\n")
     return summary
 

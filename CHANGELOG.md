@@ -8,6 +8,8 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 
 ### Sprint funcional — primera fase
 
+- Se corrige un falso positivo del smoke de navegador detectado al inspeccionar una captura vacía: cada documento se carga en una página nueva y se valida su identidad visible antes y después de capturar. El control de evidencia rechaza documentos faltantes, IDs incorrectos y texto de otro formulario.
+
 - Las importaciones pasan de estados declarativos a compras y recepciones estándar, incluidas parciales y lotes. Los gastos se identifican como costos operativos, no como valoración contable.
 - Se completan perfiles de consulta, operador y responsable, aislamiento por compañía y protecciones para cabeceras, líneas, incidencias y ajustes.
 - Las preventas muestran sobrecompromiso, conservan trazabilidad y convierten una sola vez; la distribución refleja entregas/devoluciones reales y la conciliación congela valores comerciales con correcciones separadas.

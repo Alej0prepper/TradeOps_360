@@ -27,6 +27,18 @@ class TestEvidenceGate(unittest.TestCase):
         target.mkdir(parents=True)
         for name in ("concurrency", "verified-tradeops_ci", "verified-tradeops_ci_restore", "legacy-upgrade", "ui-smoke", "compose-restore"):
             (target / (name + ".json")).write_text(json.dumps({"verified": True}))
+        documents = [("import", "trade.import"), ("presale", "trade.presale"), ("sale", "sale.order"),
+                     ("distribution", "trade.distribution"), ("incident", "trade.delivery.incident"),
+                     ("reconciliation", "trade.reconciliation")]
+        manifest = {label + "_id": index for index, (label, _) in enumerate(documents, 1)}
+        forms = [{"model": model, "id": manifest[label + "_id"], "visible": True,
+                  "fresh_page": True, "record_identity_verified": True,
+                  "checked_field": "description" if label == "incident" else "name",
+                  "expected_value": label, "observed_value": label} for label, model in documents]
+        (target / "acceptance-manifest.json").write_text(json.dumps(manifest))
+        (target / "ui-smoke.json").write_text(json.dumps({
+            "verified": True, "forms": forms, "consultation_identity_verified": True,
+        }))
         environment = patch.dict(os.environ, {"GITHUB_SHA": "a" * 40})
         environment.start()
         self.addCleanup(environment.stop)
@@ -66,4 +78,27 @@ class TestEvidenceGate(unittest.TestCase):
             self.validate(full=True)
         path.unlink()
         with self.assertRaises(FileNotFoundError):
+            self.validate(full=True)
+
+    def test_visible_form_without_identity_proof_is_rejected(self):
+        path = self.root / "data/evidence/ui-smoke.json"
+        original = json.loads(path.read_text())
+        for change in ({"record_identity_verified": False}, {"observed_value": "previous document"}):
+            with self.subTest(change=change):
+                data = json.loads(json.dumps(original))
+                data["forms"][0].update(change)
+                path.write_text(json.dumps(data))
+                with self.assertRaisesRegex(AssertionError, "record identity"):
+                    self.validate(full=True)
+
+    def test_wrong_or_missing_browser_document_is_rejected(self):
+        path = self.root / "data/evidence/ui-smoke.json"
+        data = json.loads(path.read_text())
+        data["forms"][0]["id"] = 999
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(AssertionError, "expected documents"):
+            self.validate(full=True)
+        data["forms"].pop()
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(AssertionError, "expected documents"):
             self.validate(full=True)

@@ -16,5 +16,6 @@ Cada registro explica problema, decisión, concepto de Odoo y evidencia. Las cla
 
 - [Guía del incremento transversal](phase-1-functional-sprint.md).
 - [Error real de CLI, corrección y regresión](phase-1-cli-recovery.md).
+- [Identidad del documento y capturas fiables](phase-1-ui-evidence.md).
 
 La [plantilla de módulo](../templates/module-spec.md) sirve para preparar cada nuevo incremento antes de programarlo.
