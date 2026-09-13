@@ -36,7 +36,10 @@ async function expectedValue(context, model, id, field) {
 }
 
 async function waitForRecord(page, field, expected) {
-  const selector = `.o_form_view .o_field_widget[name="${field}"]`;
+  // Sales lines also have a name field; identify the header, not a child line.
+  const selector = field === 'name'
+    ? '.o_form_view h1 .o_field_widget[name="name"]'
+    : `.o_form_view .o_field_widget[name="${field}"]`;
   await page.locator(selector).waitFor({ state: 'visible', timeout: 45000 });
   await page.waitForFunction(({ selector, expected }) => {
     const widget = document.querySelector(selector);
