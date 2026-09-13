@@ -16,7 +16,7 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="alert alert-warning" invisible="not legacy_review_required">Historical distribution: review its provenance before using the new workflow.</div>
+                    <div role="status" class="alert alert-warning" invisible="not legacy_review_required">Historical distribution: review its provenance before using the new workflow.</div>
                     <field name="legacy_review_required" invisible="True"/>
                     <div class="oe_button_box" name="button_box"><button name="action_open_deliveries" type="object" string="Deliveries / Returns" class="oe_stat_button" icon="fa-truck"/></div>
                     <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>

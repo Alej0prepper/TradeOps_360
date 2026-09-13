@@ -22,8 +22,8 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="alert alert-warning" invisible="not is_overcommitted">Commercial commitments exceed an imported product's expected quantity. This is a warning, not a stock reservation.</div>
-                    <div class="alert alert-warning" invisible="not legacy_review_required">This historical presale requires migration review.</div>
+                    <div role="status" class="alert alert-warning" invisible="not is_overcommitted">Commercial commitments exceed an imported product's expected quantity. This is a warning, not a stock reservation.</div>
+                    <div role="status" class="alert alert-warning" invisible="not legacy_review_required">This historical presale requires migration review.</div>
                     <field name="legacy_review_required" invisible="True"/>
                     <field name="is_overcommitted" invisible="True"/>
                     <div class="oe_button_box" name="button_box"><button name="action_open_sale" type="object" string="Quotation" class="oe_stat_button" icon="fa-shopping-cart" invisible="not sale_order_id"/></div>

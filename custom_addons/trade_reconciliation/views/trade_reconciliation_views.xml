@@ -24,8 +24,8 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="alert alert-info">Confirmed sales subtotals, excluding taxes. This commercial statement is not an accounting reconciliation, supplier balance or payment certificate.</div>
-                    <div class="alert alert-warning" invisible="not legacy_review_required">Historical statement: review provenance and migration snapshots before further operations.</div>
+                    <div role="status" class="alert alert-info">Confirmed sales subtotals, excluding taxes. This commercial statement is not an accounting reconciliation, supplier balance or payment certificate.</div>
+                    <div role="status" class="alert alert-warning" invisible="not legacy_review_required">Historical statement: review provenance and migration snapshots before further operations.</div>
                     <field name="legacy_review_required" invisible="True"/>
                     <div class="oe_title"><label for="name"/><h1><field name="name"/></h1></div>
                     <group>
