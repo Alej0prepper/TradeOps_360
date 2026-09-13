@@ -1,4 +1,5 @@
 """Repository-level checks catch broken runbooks before starting Odoo."""
+import ast
 from pathlib import Path
 import re
 import subprocess
@@ -49,3 +50,15 @@ class TestRepositoryContract(unittest.TestCase):
                 if "alert" in element.get("class", "").split():
                     with self.subTest(view=str(path.relative_to(ROOT))):
                         self.assertIn(element.get("role"), ("status", "alert", "alertdialog"))
+
+    def test_documented_trade_models_exist_in_source(self):
+        models = set()
+        for path in (ROOT / "custom_addons").rglob("*.py"):
+            for node in ast.walk(ast.parse(path.read_text())):
+                if isinstance(node, ast.Assign) and isinstance(node.value, ast.Constant):
+                    if any(isinstance(target, ast.Name) and target.id == "_name" for target in node.targets):
+                        models.add(node.value.value)
+        for path in (ROOT / "docs/modules").glob("*.md"):
+            for model in re.findall(r"`(trade\.[a-z0-9_.]+)`", path.read_text()):
+                with self.subTest(spec=path.name, model=model):
+                    self.assertIn(model, models)

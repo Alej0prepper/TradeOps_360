@@ -10,7 +10,7 @@ Preparar puertos y códigos comerciales y aplicar la misma política de permisos
 No es un repositorio de reglas de todos los dominios ni un backend independiente. Los grupos estándar son aditivos; asignar Consulta no revoca permisos externos.
 
 ## 3. Odoo estándar y dependencias
-`contacts`, `sale_stock`, `purchase_stock`, `mail`. `trade.port` (catálogo global), `trade.document.mixin`, `trade.child.mixin` y `trade.legacy.mixin` (abstractos). Extiende `res.partner` con `trade_code`.
+`contacts`, `sale_stock`, `purchase_stock`, `mail`. `trade.port` (catálogo global), `trade.document.mixin` y `trade.child.mixin` (abstractos). `models/legacy.py` amplía el mixin de documentos con evidencia histórica; no crea otro modelo. Extiende `res.partner` con `trade_code`.
 
 ## 4. Datos y propiedad
 Puerto: nombre y código obligatorios, código normalizado a mayúsculas y único, `active` para archivar. Documento: referencia generada, compañía obligatoria y moneda relacionada. Hijo: compañía/moneda derivadas de su cabecera. `trade_code` es opcional y no único. Cabeceras e hijos operativos usan las compañías seleccionadas del usuario; los catálogos compartidos conservan las reglas estándar.
