@@ -1,12 +1,21 @@
-# Learning milestones
+# Incrementos de aprendizaje
 
-This directory records the important transformations of TradeOps 360 during the course. It is not a transcript of every lesson; the code remains the primary source of truth.
+Cada registro explica problema, decisión, concepto de Odoo y evidencia. Las clases históricas no se reescriben como si ya hubieran descrito el estado final del sprint.
 
-Each future milestone should state:
+- [Day 159 — First addon skeletons](day-159-first-addons.md).
+- [Day 160 — First import model](day-160-first-import-model.md).
+- [Day 161 — Import relationships](day-161-import-relationships.md).
+- [Day 162 — Computed fields and business constraints](day-162-computed-fields-constraints.md).
+- [Day 164 — Import expenses and landed cost allocation](day-164-landed-cost-allocation.md).
+- [Day 166 — Extend Odoo models and expose import views](day-166-odoo-extension-and-views.md).
+- [Day 172 — Import-linked presales](day-172-import-linked-presales.md).
+- [Day 175 — Presale to standard sale order](day-175-presale-sale-order-conversion.md).
+- [Día 178–179 — Entregas parciales, incidencias y wizard](day-178-partial-deliveries-incidents-wizards.md).
 
-- what was added or changed;
-- why the business needs it;
-- which Odoo concept it demonstrates; and
-- how it differs from the preceding state.
+## Sprint funcional
 
-Names such as `day-159-first-addon.md` may be used once a milestone exists.
+- [Guía del incremento transversal](phase-1-functional-sprint.md).
+- [Error real de CLI, corrección y regresión](phase-1-cli-recovery.md).
+- [Identidad del documento y capturas fiables](phase-1-ui-evidence.md).
+
+La [plantilla de módulo](../templates/module-spec.md) sirve para preparar cada nuevo incremento antes de programarlo.

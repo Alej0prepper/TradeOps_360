@@ -1,49 +1,18 @@
-# TradeOps release readiness
+# Revisión de entrega de la primera fase
 
-This checklist complements the automated model tests. It does not replace a
-staging environment, database backup, or smoke test.
+Esta checklist complementa la [operación reproducible](operations.md), los [22 objetivos](phase-1-objectives.md) y la [demostración](demo-guide.md). No convierte un entorno didáctico en un despliegue de producción aprobado.
 
-## Automated module tests
+## Antes de probar
+Confirmar la revisión exacta, los digests de Odoo/PostgreSQL y una base de prueba separada. Nunca ejecutar la carga demo sobre datos reales. Ejecutar `python3 scripts/static_check.py` y `python3 -m unittest discover -s scripts/tests -v`.
 
-Run the suite against an empty non-production database. Replace
-`/path/to/odoo/addons` with the standard addons directory of the Odoo 17
-installation.
+## Pruebas y evidencia
+Ejecutar `bash scripts/dev.sh test tradeops_phase1_test`. Para cerrar la validación técnica, exigir además el workflow completo del mismo commit: pruebas de modelos, concurrencia, aceptación, migración, restauración, navegador/PDF y los comandos Compose documentados. Revisar `final-result.json`, `runtime.txt`, logs y screenshots. Un workflow fallido no es una entrega verificada aunque sus tests anteriores estén verdes.
 
-```bash
-./odoo-bin -d tradeops_test \
-  --addons-path=/path/to/odoo/addons,custom_addons \
-  -i trade_import,trade_presale,trade_distribution,trade_reconciliation \
-  --test-enable --stop-after-init
-```
+## Actualización y recuperación
+Guardar código/revisión, configuración segura, dump y filestore consistentes; detener escritores. Actualizar una copia representativa, comprobar documentos y relaciones, restaurar en una base nueva y verificar un adjunto. Una vuelta de Git no revierte el esquema. Conservar fuera de Git las copias reales y los secretos.
 
-The suite protects import cost allocation and constraints, presale conversion
-and product eligibility, incident recording, and reconciliation integrity.
+## Aceptación funcional
+Ejecutar el flujo completo con un operador normal y un responsable; incluir rechazos por rol y regla de negocio. Confirmar que las etiquetas distinguen compromiso, stock, costo operativo e importe comercial. Registrar la aceptación de otra persona y la defensa técnica del desarrollador sin atribuirlas a CI.
 
-## Staging upgrade
-
-1. Restore a representative database and its filestore into staging.
-2. Take a new database and filestore backup immediately before the upgrade.
-3. Upgrade the addons and inspect the server log for tracebacks or view and
-   access-right errors.
-
-```bash
-./odoo-bin -c /path/to/odoo.conf -d tradeops_staging \
-  -u trade_core,trade_import,trade_presale,trade_distribution,trade_reconciliation \
-  --stop-after-init
-```
-
-## Smoke test
-
-- Open the TradeOps menus and each updated form.
-- Create an import with products and an expense; confirm the landed costs.
-- Convert one confirmed presale from a completed import to a quotation.
-- Report a distribution incident and verify its Chatter message.
-- Confirm a reconciliation and verify that its sale lines cannot be reused.
-- Check the server log and the affected records' Chatter history.
-
-## Production deployment
-
-Deploy the tested commit only after the staging upgrade and smoke test pass.
-Keep the pre-upgrade code revision, database backup, and filestore backup
-together. If the release must be reversed, restore data consistently with the
-code revision; reverting Git alone does not undo an Odoo module upgrade.
+## Entrega
+Solo fusionar o publicar una versión aprobada explícitamente. Este sprint no fusiona `main`, no despliega en producción y no borra bases ni volúmenes para simular recuperación.

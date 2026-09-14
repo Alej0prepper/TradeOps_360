@@ -1,6 +1,6 @@
 # TradeOps 360 — Roadmap
 
-This roadmap is the progression contract for the course. Work is introduced in the indicated lesson; functionality from later lessons must not be implemented early.
+This roadmap preserves the progression contract for the course. On `sprint/phase-1-functional`, the explicitly authorized [phase-1 sprint](sprint-functional.md) is the delivery scope and permits the functional increments listed in [the 22 objectives](phase-1-objectives.md). This does not mark future lessons as taught or authorize the excluded API, payments, FX or fleet work. Outside this sprint, introduce functionality only at its agreed learning milestone.
 
 | Day | Milestone |
 | --- | --- |

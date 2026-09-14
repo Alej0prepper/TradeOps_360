@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+    <record id="sequence_import" model="ir.sequence">
+        <field name="name">TradeOps Import</field><field name="code">trade.import</field>
+        <field name="prefix">IMP/%(year)s/</field><field name="padding">6</field><field name="company_id" eval="False"/>
+    </record>
+    <record id="sequence_presale" model="ir.sequence">
+        <field name="name">TradeOps Presale</field><field name="code">trade.presale</field>
+        <field name="prefix">PRE/%(year)s/</field><field name="padding">6</field><field name="company_id" eval="False"/>
+    </record>
+    <record id="sequence_distribution" model="ir.sequence">
+        <field name="name">TradeOps Distribution</field><field name="code">trade.distribution</field>
+        <field name="prefix">DIS/%(year)s/</field><field name="padding">6</field><field name="company_id" eval="False"/>
+    </record>
+    <record id="sequence_reconciliation" model="ir.sequence">
+        <field name="name">TradeOps Reconciliation</field><field name="code">trade.reconciliation</field>
+        <field name="prefix">REC/%(year)s/</field><field name="padding">6</field><field name="company_id" eval="False"/>
+    </record>
+</odoo>

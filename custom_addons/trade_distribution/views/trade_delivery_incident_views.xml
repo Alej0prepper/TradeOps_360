@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_incident_tree" model="ir.ui.view">
+        <field name="name">trade.delivery.incident.tree</field><field name="model">trade.delivery.incident</field>
+        <field name="arch" type="xml"><tree create="False" delete="False" decoration-warning="state == 'open'"><field name="distribution_id"/><field name="incident_date"/><field name="incident_type"/><field name="description"/><field name="responsible_id"/><field name="state" widget="badge"/></tree></field>
+    </record>
+    <record id="view_incident_form" model="ir.ui.view">
+        <field name="name">trade.delivery.incident.form</field><field name="model">trade.delivery.incident</field>
+        <field name="arch" type="xml">
+            <form create="False" delete="False">
+                <header><button name="action_resolve" type="object" string="Resolve Incident" class="btn-primary" invisible="state != 'open'" groups="trade_core.group_trade_manager"/><field name="state" widget="statusbar"/></header>
+                <sheet>
+                    <group>
+                        <field name="company_id" readonly="True"/><field name="distribution_id" readonly="True"/>
+                        <field name="incident_type" readonly="state != 'open'"/>
+                        <field name="incident_date" readonly="state != 'open'"/>
+                        <field name="responsible_id" readonly="state != 'open'" domain="[('share', '=', False), ('company_ids', 'in', [company_id])]"/>
+                    </group>
+                    <group string="Incident"><field name="description" readonly="state != 'open'"/></group>
+                    <group string="Resolution">
+                        <field name="resolution" readonly="state != 'open'" groups="trade_core.group_trade_manager"/>
+                        <field name="resolution" readonly="True" groups="!trade_core.group_trade_manager"/>
+                        <field name="resolved_at"/><field name="resolved_by_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_incident_search" model="ir.ui.view">
+        <field name="name">trade.delivery.incident.search</field><field name="model">trade.delivery.incident</field>
+        <field name="arch" type="xml"><search><field name="distribution_id"/><field name="description"/><field name="responsible_id"/><filter name="open" string="Open incidents" domain="[('state', '=', 'open')]"/><group expand="0" string="Group By"><filter name="responsible" string="Responsible" context="{'group_by': 'responsible_id'}"/><filter name="state" string="Status" context="{'group_by': 'state'}"/></group></search></field>
+    </record>
+    <record id="action_trade_incidents" model="ir.actions.act_window"><field name="name">Delivery Incidents</field><field name="res_model">trade.delivery.incident</field><field name="view_mode">tree,form</field></record>
+    <menuitem id="menu_tradeops_incidents" name="Incidents" parent="trade_core.menu_tradeops_root" action="action_trade_incidents" sequence="35" groups="trade_core.group_trade_viewer"/>
+</odoo>

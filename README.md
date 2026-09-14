@@ -1,58 +1,62 @@
-# TradeOps 360
+# TradeOps 360 — primera fase funcional
 
-TradeOps 360 is an educational and practical Odoo 17 project focused on commercial and import operations.
+Extensión educativa de **Odoo 17** para recorrer un proceso real: importación → recepción → preventa → presupuesto/venta → entrega e incidencias → conciliación comercial. Se reutilizan Compras, Ventas, Inventario, contactos y productos; no hay un backend ni un inventario paralelo.
 
-The application is built incrementally throughout an Odoo learning course. Each lesson introduces or improves a real part of the same system.
+## Estado y límites
 
-The final objective is to produce both:
+Los cinco addons tienen modelos, vistas, permisos y pruebas. La versión de los manifests es `17.0.2.0.0`. **Implementación no equivale a aceptación**: consulta [los 22 objetivos y su evidencia](docs/phase-1-objectives.md) y el `final-result.json` del workflow correspondiente al commit que vayas a utilizar. La defensa personal del desarrollo sigue siendo una actividad de aprendizaje, no algo que certifique CI.
 
-1. A functional TradeOps 360 application.
-2. An explanatory reference project showing how an Odoo application evolves from architecture to production.
+Una importación tiene una compañía, un proveedor principal, un almacén y la moneda de esa compañía. El prorrateo calcula **costos operativos**, no valoración contable; las preventas son compromisos, no reservas garantizadas; la conciliación agrupa subtotales comerciales, no acredita pagos. No se incluyen API externa, pagos propios, multidivisa, flota avanzada ni localizaciones fiscales.
 
-## Current state
+## Inicio con Docker Compose
 
-`trade_core` now provides a configurable port catalog. `trade_import` connects
-each import with Odoo customers, financiers, companies, active products, and
-its origin and destination ports. Imports calculate line and quantity totals,
-enforce valid routes and quantities, and distribute import expenses
-proportionally to purchase value to determine each product's landed cost.
-`trade_presale` now records commercial commitments linked to imports, restricts
-their lines to products present in the selected import, and converts eligible
-confirmed presales into standard Odoo quotations with a traceable link.
+Requisitos: Git, Python 3, Docker Engine y Docker Compose v2. Las imágenes de Odoo y PostgreSQL están fijadas por digest en `compose.yaml`. Este entorno usa volúmenes propios, no expone PostgreSQL al host y publica Odoo únicamente en `127.0.0.1:8070`; no reemplaza tu instalación desde fuente.
 
-TradeOps extends Odoo contacts with an optional business code instead of
-duplicating customers or financiers. Administrators can manage that code from
-the standard contact form, and users can manage imports, presales,
-distributions, incidents, and supplier reconciliations from the TradeOps menu.
-Supplier reconciliations group confirmed Odoo sale lines and prevent a sale
-line from belonging to more than one reconciliation. The import lifecycle
-states are defined as shared vocabulary, but transitions between them are not
-yet enforced. Imports, presales, distributions, and reconciliations use Odoo's
-Chatter for tracking and business events; imports and distributions also make
-standard activities available. The project currently has no reception or
-inventory workflow, oversell monitoring, presale payments, external API,
-reports, or automated test suite for the full application.
+```bash
+git clone --branch sprint/phase-1-functional https://github.com/Alej0prepper/TradeOps_360.git
+cd TradeOps_360
+test -e .env || cp .env.example .env
+```
 
-## Core principle
+Edita `.env`: establece tres contraseñas distintas para `POSTGRES_PASSWORD`, `ODOO_MASTER_PASSWORD` y `TRADEOPS_ADMIN_PASSWORD` (esta última, mínimo 12 caracteres). Para seguir la demostración usa `ODOO_DB=tradeops_phase1_demo`. No publiques `.env`.
 
-Extend Odoo instead of rebuilding functionality already provided by the ERP.
+```bash
+bash scripts/dev.sh init tradeops_phase1_demo
+bash scripts/dev.sh up
+```
 
-## Final business flow
+Abre `http://localhost:8070` e inicia sesión como `admin` con `TRADEOPS_ADMIN_PASSWORD`. `init` configura o restablece expresamente ese administrador: no es un comando de actualización habitual.
 
-Import -> Reception -> Inventory -> Presale -> Sale -> Distribution -> Reconciliation
+Para cargar **solo datos ficticios en esa base de demostración**:
 
-## Documentation
+```bash
+read -rsp 'Contraseña temporal para los usuarios demo: ' TRADEOPS_DEMO_PASSWORD
+echo
+export TRADEOPS_DEMO_PASSWORD
+bash scripts/dev.sh demo tradeops_phase1_demo
+unset TRADEOPS_DEMO_PASSWORD
+```
 
-- [Vision](docs/vision.md)
-- [Architecture](docs/architecture.md)
-- [Roadmap](docs/roadmap.md)
-- [Architectural decisions](docs/decisions/README.md)
-- [Learning milestones](docs/learning/README.md)
-- [Release readiness](docs/release-readiness.md)
+Usuarios: `phase1_operator`, `phase1_responsible` y `phase1_viewer`. Los tres usan la contraseña temporal que acabas de introducir. La carga se rechaza cuando ya existen las fixtures; no borres datos para repetirla, utiliza otra base de demostración.
 
-## Remaining work
+## Verificación
 
-The remaining work includes the import workflow and its valid state
-transitions, access controls and multi-company restrictions, reception and
-inventory, presales and sales, distribution, supplier reconciliation,
-integrations and reports, testing, and deployment.
+```bash
+python3 scripts/static_check.py
+python3 -m unittest discover -s scripts/tests -v
+bash scripts/dev.sh test tradeops_phase1_test
+```
+
+Las pruebas rápidas no necesitan Odoo. Las pruebas de modelos sí se ejecutan dentro de Odoo. GitHub Actions añade la conversión concurrente, actualización desde el baseline real, restauración de base/filestore, navegador, PDF y ensayo de los comandos Docker. No se acepta un total verde si falta algún test previsto.
+
+## Guías de trabajo
+
+- [Reglas funcionales y seguridad](docs/functional-spec.md).
+- [Objetivos y trazabilidad](docs/phase-1-objectives.md).
+- [Arquitectura](docs/architecture.md) y [fichas de los cinco módulos](docs/modules/README.md).
+- [Plantilla para desarrollar un módulo](docs/templates/module-spec.md).
+- [Operación, actualización y recuperación](docs/operations.md).
+- [Demostración y defensa técnica](docs/demo-guide.md).
+- [Decisiones](docs/decisions/README.md), [aprendizaje](docs/learning/README.md) y [changelog](CHANGELOG.md).
+
+El [roadmap del curso](docs/roadmap.md) conserva la progresión pedagógica. El [sprint autorizado](docs/sprint-functional.md) permite completar esta primera fase en una rama separada, sin declarar impartidas las clases futuras.

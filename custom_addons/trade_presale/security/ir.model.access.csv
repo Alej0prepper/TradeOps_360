@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+presale_viewer,Presale consultation,model_trade_presale,trade_core.group_trade_viewer,1,0,0,0
+presale_operator,Presale operations,model_trade_presale,trade_core.group_trade_operator,1,1,1,1
+line_viewer,Presale line consultation,model_trade_presale_line,trade_core.group_trade_viewer,1,0,0,0
+line_operator,Presale line operations,model_trade_presale_line,trade_core.group_trade_operator,1,1,1,1

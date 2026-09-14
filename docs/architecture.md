@@ -1,117 +1,49 @@
-# TradeOps 360 — Architecture
+# TradeOps 360 — arquitectura de la primera fase
 
-## Runtime
-
-TradeOps executes inside Odoo 17.
+## Ejecución
 
 ```text
-User
-  -> Odoo Web Client
-  -> Odoo Server
-  -> Models / Business Logic
-  -> Odoo ORM
-  -> PostgreSQL
+Usuario → cliente web Odoo → acciones/modelos → ORM → PostgreSQL
+                                 ↓
+                     Compras / Ventas / Inventario
 ```
 
-TradeOps is not an independent backend. Its modules will live inside the Odoo server and reuse Odoo's standard capabilities.
+TradeOps se ejecuta dentro de Odoo 17. No existe un servicio backend independiente ni tablas alternativas de clientes, productos, ventas o existencias.
 
-## Standard models
+## Dependencias y propiedad
 
-TradeOps will reuse:
+`trade_core` depende de `contacts`, `sale_stock`, `purchase_stock` y `mail`. Centraliza puertos, códigos de contacto, roles, secuencias y dos mixins de invariantes. Esta dependencia amplia coordina permisos operativos de las aplicaciones estándar; no pretende ser una biblioteca mínima instalable sin ellas.
 
-- `res.partner` for customers, suppliers, and financiers
-- `res.users` for users
-- `res.company` for companies
-- `product.product` for products
-- `stock.warehouse` for warehouses
-- `sale.order` for sales
-- `stock.picking` for inventory operations
+`trade_import` depende de Core y Compras/Inventario; posee importación, líneas y gastos. Extiende compras y recepciones para conservar procedencia y actualizar el estado desde hechos físicos.
 
-When TradeOps needs additional behavior or information on one of these concepts, it should extend the corresponding standard model (for example, with `_inherit`) rather than create a duplicate model.
+`trade_presale` depende de Importaciones y Ventas/Inventario; posee compromisos comerciales. Extiende ventas y líneas estándar con enlaces protegidos, y calcula compromiso sin duplicar demanda.
 
-## Custom domains
+`trade_distribution` depende de Preventas y Ventas/Inventario; posee seguimiento e incidencias. No decide existencias. Su cierre depende de entregas netas y resolución de incidencias.
 
-TradeOps-specific domains will include Imports, Presales, Distribution, and Supplier Reconciliation.
+`trade_reconciliation` depende de Preventas y Ventas; posee declaraciones comerciales, snapshots y ajustes. No crea ni reemplaza asientos o pagos.
 
-The current custom models are `trade.port` for the TradeOps port catalog and
-`trade.import` with its `trade.import.line` children for the import domain.
-`res.partner` is extended with the optional `trade_code` field; no separate
-TradeOps customer model exists. Other custom models must represent genuine
-TradeOps domain concepts and be introduced only when their lesson creates the
-architectural need.
+Las dependencias exactas y archivos cargados están en cada `__manifest__.py`; las [fichas](modules/README.md) detallan contratos y pruebas.
 
-## ORM policy
+## Invariantes, seguridad y transacciones
 
-Business logic should normally use the Odoo ORM. Direct SQL is not the normal mechanism for business operations because it can bypass permissions, record rules, computed fields, tracking, cache, automations, and Python business logic. Any direct SQL requires explicit technical justification.
+`trade.document.mixin` protege creación, compañía, referencia, estado, enlaces, edición y borrado. `trade.child.mixin` protege los padres de líneas y gastos incluso al modificar hijos directamente. No son un motor genérico de workflow: cada addon conserva sus acciones de negocio.
 
-## Multi-company and warehouses
+Los roles se combinan con ACL y reglas globales por compañías permitidas. `check_company=True` y validaciones específicas evitan vínculos incompatibles. Las ayudas XML no sustituyen la validación del servidor.
 
-The project must remain compatible with multiple Odoo companies and multiple warehouses. Business logic must never assume that there is only one company, and a company and warehouse must not be treated as equivalent concepts.
+Las mutaciones ordinarias usan ORM. El SQL de bloqueo toma filas existentes después de comprobar permisos; los cambios continúan por ORM. Las restricciones únicas protegen vínculos uno-a-uno, y la prueba concurrente usa conexiones/transacciones separadas con reintento tras conflicto de serialización. No se hace `commit()` en las acciones de negocio; los commits explícitos de scripts preparan únicamente fixtures desechables.
 
-## Security
+Los hooks de Inventario usan `sudo()` de forma acotada para sincronizar operaciones ya enlazadas al movimiento validado. No se usa un flag de contexto del cliente para saltar permisos.
 
-Security will progressively include groups, ACLs, record rules, company restrictions, and warehouse restrictions. These controls will be added when their corresponding lessons introduce the business requirements.
+## Trazabilidad y límites
 
-## Traceability
+Chatter registra transiciones y eventos. Las conciliaciones guardan snapshots al confirmar; sus ajustes son registros nuevos e inmutables. No se afirma que todo cambio de una tabla estándar constituya una auditoría contable completa.
 
-Important business operations must eventually preserve what happened, who performed it, when it happened, which company was involved, and which business object was affected.
+Los nombres técnicos heredados como `landed_total` conservan compatibilidad, pero las etiquetas y documentación dicen **costo operativo**. Compromiso no es reserva, entrega no es cantidad reservada y conciliación comercial no es pago.
 
-## Extension policy
+## Verificación y entrega
 
-Before creating a new model:
+Las pruebas de modelos están en `custom_addons/*/tests`. Las pruebas rápidas de infraestructura están en `scripts/tests`. CI instala en limpio, compara el inventario de tests con lo ejecutado, ensaya concurrencia, actualización actual y desde el baseline `b72cf69`, recuperación de base/filestore y navegación/PDF.
 
-1. Check whether Odoo already models the concept.
-2. Identify the responsible Odoo module.
-3. Prefer extending the existing model.
-4. Create a TradeOps model only for a custom domain concept.
+Un único `final-result.json` identifica el commit y los resultados completos del run. No basta con combinar éxitos de ejecuciones distintas. El contenedor local usa volúmenes propios y acceso web local; no representa una configuración de producción.
 
-## Module boundaries
-
-`trade_core` provides the shared TradeOps foundation and depends on the
-standard Contacts, Product, and Inventory capabilities. `trade_import`
-contains the import domain boundary and depends on `trade_core`.
-`trade_presale` contains import-linked commercial commitments and depends on
-`trade_import` and the standard `sale` module. It converts an eligible
-confirmed presale into a standard `sale.order` quotation; it does not duplicate
-the Sales workflow. `trade_reconciliation` depends on Sales and groups
-confirmed `sale.order.line` records under the supplier reconciliation that
-processes them.
-
-No business model is part of `trade_core`, which currently owns `trade.port`;
-`trade_import` owns `trade.import` and its import children; `trade_presale`
-owns `trade.presale` and `trade.presale.line`; `trade_distribution` owns
-distribution records and incidents; and `trade_reconciliation` owns
-reconciliations and their sale-line links.
-
-## User interface
-
-`trade_core` extends the standard contact form through view inheritance and
-XPath so that `trade_code` appears without copying Odoo's view. `trade_import`
-provides the import list and form views, plus the TradeOps > Imports action and
-menu. `trade_presale` provides the TradeOps > Presales action and form. Access
-controls are deliberately not part of these modules yet; they will be
-introduced with the corresponding security milestone.
-
-`trade_distribution` owns distributions and delivery incidents. Distribution
-quantities are derived from linked Odoo pickings; the incident wizard is
-transient and delegates persistence to the distribution model.
-
-`trade_reconciliation` provides a list and form under TradeOps. Its lines are
-limited by ORM validation to confirmed sales from the same company and currency,
-while PostgreSQL enforces the final one-sale-line-per-reconciliation invariant.
-
-## Operational observability
-
-Imports and distributions reuse `mail.thread` and `mail.activity.mixin` for
-Chatter and manually assigned Odoo activities. Presales and reconciliations
-reuse `mail.thread`. Their important state fields use Odoo tracking, while
-business actions post concise messages to the associated record. No custom
-notification, audit, activity, integration, or reporting model is introduced.
-
-## Verification and release
-
-The critical business rules are protected with Odoo `TransactionCase` suites
-inside the relevant addons. The repository also provides a release-readiness
-checklist covering a clean test database, staging module upgrade, backups, and
-post-upgrade smoke tests. It does not prescribe production infrastructure or
-replace the operational controls of the Odoo deployment.
+El [roadmap](roadmap.md) conserva la progresión del curso y el [sprint](sprint-functional.md) registra la excepción de alcance autorizada. Las decisiones anteriores son historia; las ADR 012–014 y el contrato funcional describen la fase actual.

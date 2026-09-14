@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rule_reconciliation_company" model="ir.rule"><field name="name">Commercial reconciliation companies</field><field name="model_id" ref="model_trade_reconciliation"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+    <record id="rule_line_company" model="ir.rule"><field name="name">Reconciliation line companies</field><field name="model_id" ref="model_trade_reconciliation_line"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+    <record id="rule_adjustment_company" model="ir.rule"><field name="name">Commercial adjustment companies</field><field name="model_id" ref="model_trade_reconciliation_adjustment"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+    <record id="rule_wizard_company" model="ir.rule"><field name="name">Commercial adjustment wizard companies</field><field name="model_id" ref="model_trade_reconciliation_adjustment_wizard"/><field name="domain_force">[('company_id', 'in', company_ids)]</field></record>
+</odoo>

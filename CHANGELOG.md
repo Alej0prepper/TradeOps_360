@@ -6,6 +6,20 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 
 ## [Unreleased]
 
+### Sprint funcional — primera fase
+
+- Se corrige un falso positivo del smoke de navegador detectado al inspeccionar una captura vacía: cada documento se carga en una página nueva y se valida su identidad visible antes y después de capturar. El control de evidencia rechaza documentos faltantes, IDs incorrectos y texto de otro formulario.
+
+- Las importaciones pasan de estados declarativos a compras y recepciones estándar, incluidas parciales y lotes. Los gastos se identifican como costos operativos, no como valoración contable.
+- Se completan perfiles de consulta, operador y responsable, aislamiento por compañía y protecciones para cabeceras, líneas, incidencias y ajustes.
+- Las preventas muestran sobrecompromiso, conservan trazabilidad y convierten una sola vez; la distribución refleja entregas/devoluciones reales y la conciliación congela valores comerciales con correcciones separadas.
+- Se incorpora CI con instalación real, pruebas de Odoo, conversión concurrente, actualización desde el baseline, restauración de base/filestore y smoke de navegador/PDF. Docker Compose permite repetir la instalación y la recuperación.
+- Se corrige el arranque que anteponía `-c` a `shell`; `ODOO_RC` conserva el subcomando y las credenciales se escriben en un archivo temporal privado. Se añaden pruebas del wrapper y del verificador de evidencia.
+- Se amplía la regresión de compañías a incidencias y ajustes; el control final exige identificar cada método de test ejecutado y la revisión de código, no solo un total.
+- Se actualizan README y arquitectura, se completan cinco fichas, plantilla reutilizable, reglas, operación, trazabilidad y guion de demostración. La defensa personal y la aceptación de usabilidad permanecen separadas de la automatización.
+
+### Historial de incrementos del curso
+
 ### Added
 
 - Established the Day 157 architecture baseline: project vision, architecture contract, roadmap, decision log, learning log, and the empty custom addons directory.
