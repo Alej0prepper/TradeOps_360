@@ -8,6 +8,8 @@ The project follows the principles of [Keep a Changelog](https://keepachangelog.
 
 ### Sprint funcional — primera fase
 
+- Se documenta el despliegue controlado en un servidor compartido: aislamiento del proyecto Compose, proxy HTTPS, secretos y configuración fuera de Git, copias consistentes, actualización y reversión sin sobrescribir datos. La guía conserva explícitamente la distinción entre el entorno reproducible del curso y una producción aprobada.
+
 - Se corrige un falso positivo del smoke de navegador detectado al inspeccionar una captura vacía: cada documento se carga en una página nueva y se valida su identidad visible antes y después de capturar. El control de evidencia rechaza documentos faltantes, IDs incorrectos y texto de otro formulario.
 
 - Las importaciones pasan de estados declarativos a compras y recepciones estándar, incluidas parciales y lotes. Los gastos se identifican como costos operativos, no como valoración contable.

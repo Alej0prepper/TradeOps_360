@@ -56,6 +56,7 @@ Las pruebas rápidas no necesitan Odoo. Las pruebas de modelos sí se ejecutan d
 - [Arquitectura](docs/architecture.md) y [fichas de los cinco módulos](docs/modules/README.md).
 - [Plantilla para desarrollar un módulo](docs/templates/module-spec.md).
 - [Operación, actualización y recuperación](docs/operations.md).
+- [Despliegue controlado en servidor compartido](docs/shared-server-deployment.md).
 - [Demostración y defensa técnica](docs/demo-guide.md).
 - [Decisiones](docs/decisions/README.md), [aprendizaje](docs/learning/README.md) y [changelog](CHANGELOG.md).
 
